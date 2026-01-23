@@ -1,0 +1,610 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MITC</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .top-bar {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #333;
+        }
+
+            .top-bar .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+        .breaking-news {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breaking-badge {
+            background: #0066cc;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .social-links {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .social-links a {
+                color: #ccc;
+                padding: 5px 12px;
+                text-decoration: none;
+                transition: all 0.3s;
+                font-size: 13px;
+                border-radius: 3px;
+            }
+
+                .social-links a:hover {
+                    color: #fff;
+                    background: rgba(255, 255, 255, 0.1);
+                }
+
+        nav {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+            nav .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 80px;
+            }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+            .logo img {
+                height: 55px;
+                width: auto;
+            }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .nav-menu > li {
+                position: relative;
+            }
+
+                .nav-menu > li > a {
+                    text-decoration: none;
+                    color: #333;
+                    font-weight: 500;
+                    padding: 10px 16px;
+                    display: block;
+                    transition: all 0.3s;
+                    font-size: 15px;
+                    border-radius: 5px;
+                }
+
+                    .nav-menu > li > a:hover {
+                        color: #0066cc;
+                        background: #f5f8ff;
+                    }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            min-width: 250px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            z-index: 1001;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .nav-menu > li:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown li {
+            list-style: none;
+        }
+
+            .dropdown li a {
+                display: block;
+                padding: 12px 20px;
+                color: #555;
+                text-decoration: none;
+                transition: all 0.3s;
+                font-size: 14px;
+            }
+
+                .dropdown li a:hover {
+                    background: #f5f8ff;
+                    color: #0066cc;
+                    padding-left: 25px;
+                }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-login, .btn-register {
+            padding: 10px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #0066cc;
+            border: 2px solid #0066cc;
+        }
+
+            .btn-login:hover {
+                background: #0066cc;
+                color: #fff;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+            }
+
+        .btn-register {
+            background: #0066cc;
+            color: #fff;
+            border: 2px solid #0066cc;
+        }
+
+            .btn-register:hover {
+                background: #004080;
+                border-color: #004080;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 102, 204, 0.4);
+            }
+
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+            .mobile-toggle span {
+                width: 25px;
+                height: 2px;
+                background: #333;
+                margin: 3px 0;
+                transition: 0.3s;
+                border-radius: 2px;
+            }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        footer {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 60px 20px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: #0066cc;
+            font-size: 1.1em;
+        }
+
+        .footer-section p {
+            color: #ccc;
+            line-height: 1.8;
+            font-size: 0.95em;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+            .footer-section ul li {
+                margin-bottom: 10px;
+            }
+
+                .footer-section ul li a {
+                    color: #ccc;
+                    text-decoration: none;
+                    transition: color 0.3s;
+                    font-size: 0.95em;
+                }
+
+                    .footer-section ul li a:hover {
+                        color: #0066cc;
+                    }
+
+        .footer-logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+            .footer-social a {
+                color: #ccc;
+                text-decoration: none;
+                transition: color 0.3s;
+                font-size: 0.9em;
+            }
+
+                .footer-social a:hover {
+                    color: #0066cc;
+                }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        @@media (max-width: 992px) {
+            .mobile-toggle {
+                display: flex;
+            }
+
+            nav .container {
+                height: 70px;
+            }
+
+            .logo img {
+                height: 45px;
+            }
+
+            .nav-center {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: #fff;
+                flex-direction: column;
+                justify-content: flex-start;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+                .nav-center.active {
+                    max-height: 80vh;
+                    overflow-y: auto;
+                }
+
+            .nav-menu {
+                flex-direction: column;
+                width: 100%;
+                padding: 10px 0;
+            }
+
+                .nav-menu > li {
+                    width: 100%;
+                }
+
+                    .nav-menu > li > a {
+                        padding: 15px 20px;
+                        border-radius: 0;
+                    }
+
+            .dropdown {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                display: none;
+                background: #f8f8f8;
+                border-radius: 0;
+                margin-top: 0;
+            }
+
+            .nav-menu > li.active .dropdown {
+                display: block;
+            }
+
+            .nav-right {
+                gap: 8px;
+            }
+
+            .auth-buttons {
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .btn-login, .btn-register {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .top-bar .container {
+                font-size: 12px;
+            }
+
+            .breaking-news {
+                gap: 5px;
+            }
+
+            .social-links a {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .btn-login span,
+            .btn-register span {
+                display: none;
+            }
+
+            .btn-login, .btn-register {
+                padding: 8px 12px;
+            }
+
+                .btn-login::after {
+                    content: "Login";
+                }
+
+                .btn-register::after {
+                    content: "Register";
+                }
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <div class="container">
+                <div class="breaking-news">
+                    <span class="breaking-badge">Breaking News</span>
+                    <span>Latest Updates</span>
+                </div>
+                <div class="social-links">
+                    <a href="https://web.facebook.com/mitc.ng" target="_blank">Facebook</a>
+                    <a href="https://www.youtube.com/@@mitc-ilaro" target="_blank">YouTube</a>
+                    <a href="https://www.tiktok.com/@@mitcilaro" target="_blank">TikTok</a>
+                    <a href="https://www.instagram.com/mitc.ng/" target="_blank">Instagram</a>
+                </div>
+            </div>
+        </div>
+
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg" alt="MITC Logo">
+                    </a>
+                </div>
+
+                <div class="nav-center" id="navCenter">
+                    <ul class="nav-menu" id="navMenu">
+                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                        <li class="has-dropdown">
+                            <a href="#courses">Courses</a>
+                            <ul class="dropdown">
+                                <li><a asp-area="" asp-controller="Courses" asp-action="SoftwareEngineering">Software Engineering</a></li>
+                                <li><a asp-area="" asp-controller="Courses" asp-action="WebDesign">Website Design/Development</a></li>
+                                <li><a asp-area="" asp-controller="Courses" asp-action="ElectricalInstallation">Electrical Installation</a></li>
+                                <li><a asp-area="" asp-controller="Courses" asp-action="HardwareMaintenance">Computer Hardware Maintenance</a></li>
+                                <li><a asp-area="" asp-controller="Courses" asp-action="Building">Building</a></li>
+                                <li><a asp-area="" asp-controller="Courses" asp-action="Plumbing">Plumbing</a></li>
+                                <li><a asp-area="" asp-controller="Courses" asp-action="Tiling">Tiling</a></li>
+                                <li><a asp-area="" asp-controller="Courses" asp-action="TechTraining">6-Month Tech Training</a></li>
+                            </ul>
+                        </li>
+                        <li class="has-dropdown">
+                            <a href="#pages">Pages</a>
+                            <ul class="dropdown">
+                                <li><a asp-area="" asp-controller="Home" asp-action="Team">Team</a></li>
+                                <li><a asp-area="" asp-controller="Home" asp-action="Gallery">Gallery</a></li>
+                            </ul>
+                        </li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="News">News</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-right">
+                    <div class="auth-buttons">
+                        <a asp-area="" asp-controller="User" asp-action="Login" class="btn-login"><span>Login</span></a>
+                        <a asp-area="" asp-controller="Student" asp-action="StepOneRegistration" class="btn-register"><span>Register</span></a>
+                    </div>
+                    <div class="mobile-toggle" id="mobileToggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <img src="https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg" alt="MITC Logo" class="footer-logo">
+                    <p>Masroor International Technical College offers comprehensive technical education with hands-on training to prepare students for successful careers in various technical fields.</p>
+                    <div class="footer-social">
+                        <a href="https://web.facebook.com/mitc.ng" target="_blank">Facebook</a>
+                        <a href="https://www.youtube.com/@@mitc-ilaro" target="_blank">YouTube</a>
+                        <a href="https://www.tiktok.com/@@mitcilaro" target="_blank">TikTok</a>
+                        <a href="https://www.instagram.com/mitc.ng/" target="_blank">Instagram</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Office Hours</h3>
+                    <p>Mon – Thurs<br>8:00 AM - 5:00 PM</p>
+                    <p style="margin-top: 10px;">Friday<br>8:00 AM - 2:30 PM</p>
+                    <p style="margin-top: 15px;">
+                        <strong>Contact Us</strong><br>
+                        08160167443<br>
+                        09070682495<br>
+                        Toll-free: 800.922.8038
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Courses</h3>
+                    <ul>
+                        <li><a asp-area="" asp-controller="Courses" asp-action="SoftwareEngineering">Software Engineering</a></li>
+                        <li><a asp-area="" asp-controller="Courses" asp-action="WebDesign">Website Design/Development</a></li>
+                        <li><a asp-area="" asp-controller="Courses" asp-action="Tiling">Tiling</a></li>
+                        <li><a asp-area="" asp-controller="Courses" asp-action="ElectricalInstallation">Electrical Installation</a></li>
+                        <li><a asp-area="" asp-controller="Courses" asp-action="Building">Building</a></li>
+                        <li><a asp-area="" asp-controller="Courses" asp-action="Plumbing">Plumbing</a></li>
+                        <li><a>Refrigeration</a></li>
+                        <li><a>Air Conditioning Work</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Calendar</a></li>
+                        <li><a href="#">College Information</a></li>
+                        <li><a href="#">Department Directory</a></li>
+                        <li><a href="#">Emergency Response</a></li>
+                        <li><a href="#">Employee Directory</a></li>
+                        <li><a href="#">Work at MITC</a></li>
+                        <li><a href="#">Annual Security Report</a></li>
+                        <li><a href="#">Student Complaints</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; @DateTime.Now.Year Masroor International Technical College. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navCenter = document.getElementById('navCenter');
+
+        mobileToggle.addEventListener('click', () => {
+            navCenter.classList.toggle('active');
+        });
+
+        // Handle dropdown clicks on mobile
+        document.querySelectorAll('.has-dropdown > a').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (window.innerWidth <= 992) {
+                    e.preventDefault();
+                    const parent = item.parentElement;
+                    parent.classList.toggle('active');
+                }
+            });
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('nav') && navCenter.classList.contains('active')) {
+                navCenter.classList.remove('active');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

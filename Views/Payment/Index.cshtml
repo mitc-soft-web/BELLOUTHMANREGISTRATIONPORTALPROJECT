@@ -1,0 +1,605 @@
+﻿@{
+    ViewData["Title"] = "Student Registration - Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .registration-wrapper {
+        min-height: 85vh;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .registration-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .registration-header {
+        background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
+        color: #fff;
+        padding: 40px;
+        text-align: center;
+    }
+
+        .registration-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .registration-header p {
+            opacity: 0.95;
+            font-size: 1.05em;
+        }
+
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 40px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        flex: 1;
+        max-width: 200px;
+    }
+
+    .step-number {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #28a745;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        z-index: 2;
+    }
+
+    .step.active .step-number {
+        background: #0066cc;
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+    }
+
+    .step-label {
+        font-size: 0.9em;
+        color: #28a745;
+        font-weight: 500;
+    }
+
+    .step.active .step-label {
+        color: #0066cc;
+        font-weight: 600;
+    }
+
+    .step-line {
+        position: absolute;
+        top: 22px;
+        left: 50%;
+        width: 100%;
+        height: 3px;
+        background: #28a745;
+        z-index: 1;
+    }
+
+    .step:last-child .step-line {
+        display: none;
+    }
+
+    .payment-content {
+        padding: 50px 40px;
+    }
+
+    .payment-summary {
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 35px;
+        border: 2px solid #e0e0e0;
+    }
+
+    .summary-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .summary-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.8em;
+    }
+
+    .summary-title h2 {
+        color: #0066cc;
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+
+    .summary-title p {
+        color: #666;
+        margin: 0;
+    }
+
+    .summary-items {
+        display: grid;
+        gap: 15px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .item-label {
+        color: #666;
+        font-size: 0.95em;
+    }
+
+    .item-value {
+        color: #333;
+        font-weight: 600;
+        font-size: 1.05em;
+    }
+
+    .summary-total {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-label {
+        color: #333;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    .total-amount {
+        color: #0066cc;
+        font-size: 2em;
+        font-weight: 700;
+    }
+
+    .payment-info {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+    }
+
+        .payment-info svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+    .payment-info-content h4 {
+        color: #856404;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+    }
+
+    .payment-info-content ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #856404;
+        line-height: 1.8;
+    }
+
+    .security-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        padding: 20px;
+        background: #e8f5e9;
+        border: 2px solid #c8e6c9;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+
+        .security-badge svg {
+            color: #2e7d32;
+        }
+
+    .security-text {
+        color: #2e7d32;
+        font-weight: 600;
+    }
+
+    .payment-methods {
+        margin-bottom: 30px;
+    }
+
+        .payment-methods h3 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+    .methods-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+    }
+
+    .method-card {
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+        .method-card:hover {
+            border-color: #0066cc;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.2);
+        }
+
+    .method-icon {
+        font-size: 2em;
+        margin-bottom: 8px;
+    }
+
+    .method-name {
+        color: #666;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        padding: 14px 35px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.05em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .btn-back {
+        background: #6c757d;
+        color: #fff;
+    }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+    .btn-pay {
+        background: #0066cc;
+        color: #fff;
+        flex: 1;
+        max-width: 400px;
+        justify-content: center;
+        font-size: 1.15em;
+    }
+
+        .btn-pay:hover {
+            background: #004080;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+        }
+
+    .terms-checkbox {
+        display: flex;
+        align-items: start;
+        gap: 10px;
+        margin-bottom: 25px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+        .terms-checkbox input {
+            margin-top: 4px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #0066cc;
+        }
+
+        .terms-checkbox label {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+            cursor: pointer;
+        }
+
+        .terms-checkbox a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .terms-checkbox a:hover {
+                text-decoration: underline;
+            }
+
+    @@media (max-width: 768px) {
+        .registration-wrapper {
+            padding: 30px 15px;
+        }
+
+        .registration-header {
+            padding: 30px 20px;
+        }
+
+            .registration-header h1 {
+                font-size: 1.5em;
+            }
+
+        .payment-content {
+            padding: 30px 20px;
+        }
+
+        .progress-steps {
+            padding: 20px 15px;
+            overflow-x: auto;
+        }
+
+        .step {
+            min-width: 100px;
+        }
+
+        .payment-summary {
+            padding: 20px;
+        }
+
+        .total-amount {
+            font-size: 1.6em;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-pay {
+            max-width: 100%;
+        }
+
+        .methods-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<div class="registration-wrapper">
+    <div class="registration-container">
+        <div class="registration-header">
+            <h1>Registration Payment</h1>
+            <p>Complete your payment to finalize your registration at MITC</p>
+        </div>
+
+        <div class="progress-steps">
+            <div class="step">
+                <div class="step-number">✓</div>
+                <div class="step-label">Personal Info</div>
+                <div class="step-line"></div>
+            </div>
+            <div class="step">
+                <div class="step-number">✓</div>
+                <div class="step-label">Documents</div>
+                <div class="step-line"></div>
+            </div>
+            <div class="step">
+                <div class="step-number">✓</div>
+                <div class="step-label">Guardian Info</div>
+                <div class="step-line"></div>
+            </div>
+            <div class="step active">
+                <div class="step-number">4</div>
+                <div class="step-label">Payment</div>
+            </div>
+        </div>
+
+        <div class="payment-content">
+            <div class="payment-summary">
+                <div class="summary-header">
+                    <div class="summary-icon">
+                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z" />
+                            <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z" />
+                        </svg>
+                    </div>
+                    <div class="summary-title">
+                        <h2>Payment Summary</h2>
+                        <p>MITC Registration Fee</p>
+                    </div>
+                </div>
+
+                <div class="summary-items">
+                    <div class="summary-item">
+                        <span class="item-label">Registration Fee</span>
+                        <span class="item-value">₦5,000.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="item-label">Processing Fee</span>
+                        <span class="item-value">₦0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="item-label">Application Fee</span>
+                        <span class="item-value">Included</span>
+                    </div>
+                </div>
+
+                <div class="summary-total">
+                    <span class="total-label">Total Amount:</span>
+                    <span class="total-amount">₦5,000.00</span>
+                </div>
+            </div>
+
+            <div class="security-badge">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z" />
+                    <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
+                </svg>
+                <span class="security-text">🔒 Secure Payment powered by Paystack - Your data is encrypted and protected</span>
+            </div>
+
+            <div class="payment-info">
+                <svg width="24" height="24" fill="#856404" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                </svg>
+                <div class="payment-info-content">
+                    <h4>Payment Instructions</h4>
+                    <ul>
+                        <li>You will be redirected to Paystack secure payment gateway</li>
+                        <li>Payment can be made using Card, Bank Transfer, or USSD</li>
+                        <li>A payment receipt will be sent to your email upon successful payment</li>
+                        <li>Do not refresh or close this page during payment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="payment-methods">
+                <h3>Accepted Payment Methods</h3>
+                <div class="methods-grid">
+                    <div class="method-card">
+                        <div class="method-icon">💳</div>
+                        <div class="method-name">Debit Card</div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-icon">🏦</div>
+                        <div class="method-name">Bank Transfer</div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-icon">📱</div>
+                        <div class="method-name">USSD</div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-icon">💰</div>
+                        <div class="method-name">Bank Account</div>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="StepThreeRegistration" method="post" id="paymentForm">
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="agreeTerms" required />
+                    <label for="agreeTerms">
+                        I agree to the <a href="#" target="_blank">Terms and Conditions</a> and
+                        <a href="#" target="_blank">Privacy Policy</a> of Masroor International Technical College.
+                        I understand that this payment is non-refundable once processed.
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <a href="#" class="btn btn-back">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                        </svg>
+                        Back
+                    </a>
+                    <button type="submit" class="btn btn-pay" id="payBtn">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z" />
+                        </svg>
+                        Proceed to Payment - ₦5,000.00
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const payBtn = document.getElementById('payBtn');
+        const agreeTerms = document.getElementById('agreeTerms');
+
+        // Disable button until terms are agreed
+        payBtn.disabled = !agreeTerms.checked;
+
+        agreeTerms.addEventListener('change', function() {
+            payBtn.disabled = !this.checked;
+            if (this.checked) {
+                payBtn.style.opacity = '1';
+            } else {
+                payBtn.style.opacity = '0.6';
+            }
+        });
+
+        // Form submission with loading state
+        document.getElementById('paymentForm')?.addEventListener('submit', function() {
+            payBtn.innerHTML = `
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="animation: spin 1s linear infinite;">
+                    <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM8 14a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
+                </svg>
+                Processing...
+            `;
+            payBtn.disabled = true;
+        });
+
+        // Add CSS for spinning animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            #payBtn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+}

@@ -1,0 +1,388 @@
+﻿@model Mitc_Registration_Portal.Models.DTOs.Users.LoginRequestModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .login-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .login-container {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 1000px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .login-banner {
+        background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        text-align: center;
+    }
+
+        .login-banner img {
+            max-width: 180px;
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .login-banner h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .login-banner p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+    .login-form-section {
+        padding: 60px 40px;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .login-header h1 {
+            color: #0066cc;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+            .form-group label span {
+                color: #dc3545;
+            }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+    .input-icon {
+        position: relative;
+    }
+
+        .input-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-icon .form-control {
+            padding-left: 45px;
+        }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-danger {
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+    }
+
+    .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #0066cc;
+        }
+
+        .remember-me label {
+            margin: 0;
+            color: #666;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+    .forgot-password {
+        color: #0066cc;
+        text-decoration: none;
+        font-size: 0.95em;
+        transition: color 0.3s;
+    }
+
+        .forgot-password:hover {
+            color: #004080;
+            text-decoration: underline;
+        }
+
+    .btn-login {
+        width: 100%;
+        padding: 14px;
+        background: #0066cc;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 20px;
+    }
+
+        .btn-login:hover {
+            background: #004080;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+    .register-link {
+        text-align: center;
+        color: #666;
+        font-size: 0.95em;
+    }
+
+        .register-link a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+            .register-link a:hover {
+                color: #004080;
+                text-decoration: underline;
+            }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 25px 0;
+        color: #999;
+        font-size: 0.9em;
+    }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+    @@media (max-width: 768px) {
+        .login-container {
+            grid-template-columns: 1fr;
+        }
+
+        .login-banner {
+            padding: 40px 30px;
+        }
+
+            .login-banner img {
+                max-width: 150px;
+            }
+
+            .login-banner h2 {
+                font-size: 1.5em;
+            }
+
+        .login-form-section {
+            padding: 40px 30px;
+        }
+
+        .login-header h1 {
+            font-size: 1.6em;
+        }
+
+        .remember-forgot {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-banner">
+            <img src="https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg" alt="MITC Logo">
+            <h2>Welcome Back!</h2>
+            <p>Access your student portal to view Admission Status, assignments and more. Your journey to technical excellence continues here.</p>
+        </div>
+
+        <div class="login-form-section">
+            <div class="login-header">
+                <h1>Login to Your Account</h1>
+                <p>Enter your credentials to access your portal</p>
+            </div>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                        <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z" />
+                    </svg>
+                    <span>@ViewBag.ErrorMessage</span>
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div class="form-group">
+                    <label asp-for="Email">
+                        Email Address <span>*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input asp-for="Email"
+                               type="email"
+                               class="form-control"
+                               placeholder="Enter your email address"
+                               required />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">
+                        Password <span>*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input asp-for="Password"
+                               type="password"
+                               class="form-control"
+                               placeholder="Enter your password"
+                               required />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="remember-forgot">
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    Login
+                </button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <div class="register-link">
+                    Don't have an account? <a asp-action="StepOneRegistration" asp-controller="Student">Register here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Auto-hide error message after 5 seconds
+        setTimeout(function() {
+            var alert = document.querySelector('.alert-danger');
+            if (alert) {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            }
+        }, 5000);
+
+        // Add focus animation to form inputs
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+                this.parentElement.style.transition = 'transform 0.2s';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+}

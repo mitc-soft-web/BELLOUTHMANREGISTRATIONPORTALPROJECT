@@ -1,0 +1,613 @@
+﻿@model Mitc_Registration_Portal.Models.DTOs.Departments.CreateDepartmentRequestModel
+@{
+    ViewData["Title"] = "Create Department";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0066cc 0%, #0066cc 100%);
+        color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+    }
+
+        .page-header h1 {
+            font-size: 2em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-header p {
+            opacity: 0.95;
+            font-size: 1.05em;
+        }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 15px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 0.9em;
+    }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .breadcrumb a:hover {
+                color: #fff;
+                text-decoration: underline;
+            }
+
+        .breadcrumb span {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+    .content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        padding: 25px 30px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+        .card-header h2 {
+            color: #0066cc;
+            font-size: 1.4em;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header p {
+            color: #666;
+            font-size: 0.95em;
+            margin: 0;
+        }
+
+    .card-body {
+        padding: 35px 30px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+            .form-group label span {
+                color: #dc3545;
+            }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s;
+        outline: none;
+        background: #fff;
+    }
+
+        .form-control:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.1);
+        }
+
+        .form-control:hover {
+            border-color: #bbb;
+        }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        pointer-events: none;
+    }
+
+    .input-group .form-control {
+        padding-left: 45px;
+    }
+
+    .char-counter {
+        text-align: right;
+        font-size: 0.85em;
+        color: #999;
+        margin-top: 5px;
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .alert {
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+        animation: slideIn 0.3s ease;
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+
+    .alert svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        padding: 14px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.05em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #0066cc;
+        color: #fff;
+        flex: 1;
+    }
+
+        .btn-primary:hover {
+            background: #0066cc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: #fff;
+    }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+    .info-panel {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        height: fit-content;
+    }
+
+    .info-panel-header {
+        background: linear-gradient(135deg, #0066cc 0%, #0066cc 100%);
+        color: #fff;
+        padding: 20px;
+    }
+
+        .info-panel-header h3 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+    .info-panel-body {
+        padding: 25px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #0066cc 0%, #0066cc 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .info-content h4 {
+        font-size: 0.95em;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .info-content p {
+        font-size: 0.9em;
+        color: #666;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .recent-departments {
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+        .recent-departments h4 {
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+    .department-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .department-item {
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9em;
+    }
+
+        .department-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .dept-code {
+        background: #0066cc;
+        color: #fff;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 992px) {
+        .content-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .page-header h1 {
+            font-size: 1.6em;
+        }
+
+        .card-body {
+            padding: 25px 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <nav class="breadcrumb">
+        <a asp-controller="Student" asp-action="GetAllStudent">Dashboard</a>
+        <span>/</span>
+        <a asp-controller="Department" asp-action="Index">Departments</a>
+        <span>/</span>
+        <span>Create New</span>
+    </nav>
+    <h1>
+        <svg width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z" />
+        </svg>
+        Create New Department
+    </h1>
+    <p>Add a new department to organize courses and students effectively</p>
+</div>
+
+<div class="content-wrapper">
+    <div class="form-card">
+        <div class="card-header">
+            <h2>
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                </svg>
+                Department Information
+            </h2>
+            <p>Fill in the details below to create a new department</p>
+        </div>
+
+        <div class="card-body">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                    <span>@TempData["SuccessMessage"]</span>
+                </div>
+            }
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                        <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z" />
+                    </svg>
+                    <span>@ViewBag.ErrorMessage</span>
+                </div>
+            }
+
+            <form asp-action="CreateDepartment" method="post" id="departmentForm">
+                <div class="form-group">
+                    <label asp-for="DepartmentName">
+                        Department Name <span>*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-icon">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z" />
+                            </svg>
+                        </span>
+                        <input asp-for="DepartmentName"
+                               class="form-control"
+                               placeholder="e.g., Software Engineering"
+                               maxlength="100"
+                               required />
+                    </div>
+                    <div class="char-counter">
+                        <span id="nameCounter">0</span> / 100 characters
+                    </div>
+                    <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DepartmentalCode">
+                        Departmental Code <span>*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-icon">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z" />
+                                <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z" />
+                            </svg>
+                        </span>
+                        <input asp-for="DepartmentalCode"
+                               class="form-control"
+                               placeholder="e.g., SEW"
+                               maxlength="20"
+                               style="text-transform: uppercase;"
+                               required />
+                    </div>
+                    <div class="char-counter">
+                        <span id="codeCounter">0</span> / 20 characters
+                    </div>
+                    <span asp-validation-for="DepartmentalCode" class="text-danger"></span>
+                </div>
+
+                <div class="form-actions">
+                    <a asp-controller="Admin" asp-action="Departments" class="btn btn-secondary">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                        </svg>
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                        </svg>
+                        Create Department
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="info-panel-header">
+            <h3>Guidelines & Tips</h3>
+        </div>
+        <div class="info-panel-body">
+            <div class="info-item">
+                <div class="info-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                    </svg>
+                </div>
+                <div class="info-content">
+                    <h4>Naming Convention</h4>
+                    <p>Use clear, descriptive names that reflect the department's focus area.</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4z" />
+                    </svg>
+                </div>
+                <div class="info-content">
+                    <h4>Unique Codes</h4>
+                    <p>Department codes must be unique and follow a consistent format (e.g., SEW).</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                    </svg>
+                </div>
+                <div class="info-content">
+                    <h4>Verification</h4>
+                    <p>The system will check if the department name already exists to prevent duplicates.</p>
+                </div>
+            </div>
+
+            <div class="recent-departments">
+                <h4>Recent Departments</h4>
+                <ul class="department-list">
+                    <li class="department-item">
+                        <span>Software Engineering</span>
+                        <span class="dept-code">SEW</span>
+                    </li>
+                    <li class="department-item">
+                        <span>Electrical Installation</span>
+                        <span class="dept-code">ELT</span>
+                    </li>
+                    <li class="department-item">
+                        <span>Building Technology</span>
+                        <span class="dept-code">BLD</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Character counter for Department Name
+        const nameInput = document.querySelector('input[name="DepartmentName"]');
+        const nameCounter = document.getElementById('nameCounter');
+
+        nameInput?.addEventListener('input', function() {
+            nameCounter.textContent = this.value.length;
+        });
+
+        // Character counter for Department Code
+        const codeInput = document.querySelector('input[name="DepartmentalCode"]');
+        const codeCounter = document.getElementById('codeCounter');
+
+        codeInput?.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+            codeCounter.textContent = this.value.length;
+        });
+
+        // Form submission with loading state
+        document.getElementById('departmentForm')?.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="animation: spin 1s linear infinite;">
+                    <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zM8 14a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
+                </svg>
+                Creating...
+            `;
+        });
+
+        // Auto-hide success messages
+        setTimeout(function() {
+            const successAlert = document.querySelector('.alert-success');
+            if (successAlert) {
+                successAlert.style.transition = 'opacity 0.5s';
+                successAlert.style.opacity = '0';
+                setTimeout(() => successAlert.remove(), 500);
+            }
+        }, 5000);
+
+        // Add CSS for spinning animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+}

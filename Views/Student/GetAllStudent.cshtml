@@ -1,0 +1,402 @@
+﻿@using Mitc_Registration_Portal.Models.DTOs
+@model BaseResponse<IEnumerable<Mitc_Registration_Portal.Models.DTOs.Students.StudentDtos>>
+@{
+    ViewData["Title"] = "Student Directory";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #059669; /* Emerald 600 */
+        --primary-dark: #047857;  /* Emerald 700 */
+        --secondary-bg: #f3f4f6;  /* Gray 100 */
+        --text-dark: #1f2937;     /* Gray 800 */
+        --text-light: #6b7280;    /* Gray 500 */
+        --white: #ffffff;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --radius-lg: 0.75rem;
+    }
+
+    body {
+        background-color: var(--secondary-bg);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* --- Page Header --- */
+    .dashboard-header {
+        background: var(--white);
+        padding: 2rem 2.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 5px solid var(--primary-color);
+    }
+
+    .header-title h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .header-title p {
+        color: var(--text-light);
+        margin: 0.5rem 0 0 0;
+        font-size: 0.875rem;
+    }
+
+    /* --- Actions & Buttons --- */
+    .action-bar {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--white);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+    }
+
+    .btn-outline {
+        background-color: var(--white);
+        border-color: #e5e7eb;
+        color: var(--text-dark);
+    }
+
+    .btn-outline:hover {
+        background-color: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    /* --- Data Card --- */
+    .data-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .card-toolbar {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fafafa;
+    }
+
+    .search-wrapper {
+        position: relative;
+        max-width: 300px;
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.625rem 1rem 0.625rem 2.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        width: 1rem;
+        height: 1rem;
+    }
+
+    /* --- Table Styles --- */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .modern-table th {
+        background-color: #f9fafb;
+        padding: 0.875rem 1.5rem;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--text-light);
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .modern-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f3f4f6;
+        color: var(--text-dark);
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+
+    .modern-table tbody tr:hover {
+        background-color: #fcfdfd;
+    }
+
+    .modern-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* --- Avatars & Badges --- */
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .avatar-circle {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #34d399, #059669);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .user-meta {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .user-email {
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-male {
+        background-color: #dbeafe; /* Blue 100 */
+        color: #1e40af; /* Blue 800 */
+    }
+
+    .badge-female {
+        background-color: #fce7f3; /* Pink 100 */
+        color: #9d174d; /* Pink 800 */
+    }
+
+    /* --- Utilities --- */
+    .text-muted { color: #9ca3af; }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    
+    /* Responsive Adjustments */
+    @@media (max-width: 768px) {
+        .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        .action-bar { width: 100%; }
+        .btn-modern { flex: 1; justify-content: center; }
+        .card-toolbar { flex-direction: column; gap: 1rem; align-items: stretch; }
+        .search-wrapper { max-width: 100%; }
+    }
+</style>
+
+<div class="dashboard-header">
+    <div class="header-title">
+        <h1>
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Student Directory
+        </h1>
+        <p>View and manage registered student records</p>
+    </div>
+    <div class="action-bar">
+        <button class="btn-modern btn-outline" onclick="exportData()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export
+        </button>
+        <a href="#" class="btn-modern btn-primary">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Add New Student
+        </a>
+    </div>
+</div>
+
+<div class="data-card">
+    <div class="card-toolbar">
+        <div class="search-wrapper">
+            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search students..." onkeyup="searchTable()">
+        </div>
+        <div class="filter-wrapper">
+             <select id="genderFilter" class="search-input" style="width: auto;" onchange="filterGender()">
+                <option value="">All Genders</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-container">
+        @if (Model != null && Model.Data.Any())
+        {
+            <table class="modern-table" id="studentTable">
+                <thead>
+                    <tr>
+                        <th>Student Profile</th>
+                        <th>Gender</th>
+                        <th>Location</th>
+                        <th>Date of Birth</th>
+                        <th>Joined Date</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in Model.Data)
+                    {
+                        var genderLabel = student.Gender == 0 ? "Male" : "Female"; // Assuming 0=Male, 1=Female
+                        var genderClass = student.Gender == 0 ? "badge-male" : "badge-female";
+                        
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="avatar-circle">
+                                        @student.FirstName.Substring(0, 1).ToUpper()@student.LastName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div class="user-meta">
+                                        <span class="user-name">@student.FirstName @student.LastName</span>
+                                        <span class="user-email">@student.Email</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge @genderClass">@genderLabel</span>
+                            </td>
+                            <td>@student.State</td>
+                            <td class="text-muted">@student.DateOfBirth?.ToString("MMM dd, yyyy")</td>
+                            <td class="text-muted">@student.DateCreated.ToString("MMM dd, yyyy")</td>
+                            <td style="text-align: right;">
+                                <a href="#" class="btn-modern btn-outline" style="padding: 0.4rem; border: none;">
+                                    <svg width="20" height="20" fill="none" stroke="#6b7280" viewBox="0 0 24 24" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <svg style="margin-bottom: 1rem; color: #d1d5db;" width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">No students found</h3>
+                <p style="color: var(--text-light);">No Student Yet.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function searchTable() {
+            var input = document.getElementById("searchInput");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("studentTable");
+            var tr = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[0]; // Search Name Column
+                if (td) {
+                    var txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function filterGender() {
+            var input = document.getElementById("genderFilter");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("studentTable");
+            var tr = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[1]; // Gender Column
+                if (td) {
+                    var txtValue = td.textContent || td.innerText;
+                    if (filter === "" || txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+}

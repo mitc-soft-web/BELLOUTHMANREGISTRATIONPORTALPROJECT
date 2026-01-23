@@ -1,0 +1,517 @@
+﻿@using Mitc_Registration_Portal.Models.Enums
+@model Mitc_Registration_Portal.Models.DTOs.Students.CreateStudentRequestModel
+@{
+    ViewData["Title"] = "Student Registration - Step 1";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .registration-wrapper {
+        min-height: 85vh;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .registration-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .registration-header {
+        background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
+        color: #fff;
+        padding: 40px;
+        text-align: center;
+    }
+
+        .registration-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .registration-header p {
+            opacity: 0.95;
+            font-size: 1.05em;
+        }
+
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 40px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        flex: 1;
+        max-width: 200px;
+    }
+
+    .step-number {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        color: #999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+        z-index: 2;
+    }
+
+    .step.active .step-number {
+        background: #0066cc;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+    }
+
+    .step.completed .step-number {
+        background: #28a745;
+        color: #fff;
+    }
+
+    .step-label {
+        font-size: 0.9em;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .step.active .step-label {
+        color: #0066cc;
+        font-weight: 600;
+    }
+
+    .step-line {
+        position: absolute;
+        top: 22px;
+        left: 50%;
+        width: 100%;
+        height: 3px;
+        background: #e0e0e0;
+        z-index: 1;
+    }
+
+    .step:last-child .step-line {
+        display: none;
+    }
+
+    .form-content {
+        padding: 50px 40px;
+    }
+
+    .section-title {
+        color: #0066cc;
+        font-size: 1.4em;
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+            .form-group label span {
+                color: #dc3545;
+            }
+
+    .form-control, .form-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s;
+        outline: none;
+        background: #fff;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+    .form-select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        padding-right: 40px;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-info {
+        background: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        color: #004085;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        padding: 14px 35px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.05em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .btn-back {
+        background: #6c757d;
+        color: #fff;
+    }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+    .btn-proceed {
+        background: #0066cc;
+        color: #fff;
+    }
+
+        .btn-proceed:hover {
+            background: #004080;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+        }
+
+    .required-note {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 30px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border-left: 4px solid #0066cc;
+    }
+
+    @@media (max-width: 768px) {
+        .registration-wrapper {
+            padding: 30px 15px;
+        }
+
+        .registration-header {
+            padding: 30px 20px;
+        }
+
+            .registration-header h1 {
+                font-size: 1.5em;
+            }
+
+        .form-content {
+            padding: 30px 20px;
+        }
+
+        .progress-steps {
+            padding: 20px 15px;
+            overflow-x: auto;
+        }
+
+        .step {
+            min-width: 100px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            font-size: 1em;
+        }
+
+        .step-label {
+            font-size: 0.8em;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="registration-wrapper">
+    <div class="registration-container">
+        <div class="registration-header">
+            <h1>Student Registration</h1>
+            <p>Join Masroor International Technical College and start your journey to technical excellence</p>
+        </div>
+
+        <div class="progress-steps">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <div class="step-label">Personal Info</div>
+                <div class="step-line"></div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-label">Education</div>
+                <div class="step-line"></div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">Documents</div>
+                <div class="step-line"></div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+
+        <div class="form-content">
+            <div class="alert alert-info">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                </svg>
+                <span>Please fill in all required fields marked with an asterisk (*) to proceed to the next step.</span>
+            </div>
+
+            <form asp-action="StepOneRegistration" method="post">
+                <h3 class="section-title">Personal Information</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="FirstName">First Name <span>*</span></label>
+                        <input asp-for="FirstName" class="form-control" placeholder="Enter first name" required />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="MiddleName">Middle Name</label>
+                        <input asp-for="MiddleName" class="form-control" placeholder="Enter middle name" />
+                        <span asp-validation-for="MiddleName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="LastName">Last Name <span>*</span></label>
+                        <input asp-for="LastName" class="form-control" placeholder="Enter last name" required />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="DateOfBirth">Date of Birth <span>*</span></label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" required />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Gender" class="form-label"></label>
+                        <select asp-for="Gender" asp-items="@Html.GetEnumSelectList(typeof(Gender))" required>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="NIN">National ID Number (NIN) <span>*</span></label>
+                        <input asp-for="NIN" class="form-control" placeholder="Enter NIN" maxlength="11" required />
+                        <span asp-validation-for="NIN" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 40px;">Contact Information</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Email">Email Address <span>*</span></label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com" required />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber">Phone Number <span>*</span></label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="+234 000 000 0000" required />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label asp-for="Address">Home Address <span>*</span></label>
+                        <textarea asp-for="Address" class="form-control" placeholder="Enter full address" required></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="City">City <span>*</span></label>
+                        <input asp-for="City" class="form-control" placeholder="Enter city" required />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="State">State <span>*</span></label>
+                        <input asp-for="State" class="form-control" placeholder="Enter state" required />
+                        <span asp-validation-for="State" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 40px;">Academic Information</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="DepartmentId">Select Department <span>*</span></label>
+                        <select asp-for="DepartmentId" class="form-select" asp-items="Model.DepartmentsSelectListItems" required>
+                            <option value="">-- Choose Department --</option>
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 40px;">Account Security</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Password">Password <span>*</span></label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Create a strong password" required />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword">Confirm Password <span>*</span></label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Re-enter password" required />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a asp-action="Login" asp-controller="User" class="btn btn-back">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                        </svg>
+                        Back to Login
+                    </a>
+                    <button type="submit" class="btn btn-proceed">
+                        Proceed to Next Step
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Password strength indicator
+        document.querySelector('input[name="Password"]')?.addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strength = calculatePasswordStrength(password);
+            // Add visual feedback here
+        });
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z\d]/.test(password)) strength++;
+            return strength;
+        }
+
+        // Confirm password validation
+        document.querySelector('input[name="ConfirmPassword"]')?.addEventListener('input', function(e) {
+            const password = document.querySelector('input[name="Password"]').value;
+            const confirm = e.target.value;
+
+            if (password !== confirm && confirm.length > 0) {
+                e.target.style.borderColor = '#dc3545';
+            } else {
+                e.target.style.borderColor = '#0066cc';
+            }
+        });
+
+        // Form submission loading state
+        document.querySelector('form')?.addEventListener('submit', function() {
+            const btn = document.querySelector('.btn-proceed');
+            btn.innerHTML = '<span>Processing...</span>';
+            btn.disabled = true;
+        });
+    </script>
+}
