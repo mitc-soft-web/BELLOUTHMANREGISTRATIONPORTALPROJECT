@@ -4,7 +4,6 @@ namespace Mitc_Registration_Portal.Models.Entities
 {
     public class Payment : BaseEntity
     {
-        public Guid StudentId{ get; set; }
         public Student Student { get; set; }
         public decimal Amount {  get; set; }
         public string Reference { get; set; }

@@ -34,8 +34,8 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students
         //Navigation properties
         //public Guid PaymentId { get; set; }
         //public PaymentDtos Payment { get; set; }
-        //public Guid PassportId { get; set; }
-        //public PassportDtos Passport { get; set; }
+        public Guid PassportId { get; set; }
+        public String PassportUrl { get; set; }
         //public Guid WaecId { get; set; }
         //public WaecDtos Waec { get; set; }
         //public Guid DepartmentId { get; set; }

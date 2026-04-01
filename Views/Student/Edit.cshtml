@@ -1,0 +1,15 @@
+@using Mitc_Registration_Portal.Models.DTOs
+@model BaseResponse<Mitc_Registration_Portal.Models.DTOs.Students.StudentDtos>
+
+@{
+    ViewData["Title"] = "Update Admission Status";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@await Html.PartialAsync("_EditAdmissionStatus", Model)
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

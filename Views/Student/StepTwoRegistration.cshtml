@@ -5,6 +5,10 @@
 }
 
 <style>
+    * {
+        box-sizing: border-box;
+    }
+
     .registration-wrapper {
         min-height: 85vh;
         padding: 60px 20px;
@@ -15,60 +19,112 @@
         max-width: 900px;
         margin: 0 auto;
         background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border-radius: 18px;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
         overflow: hidden;
     }
 
+    /* ─── Header ─────────────────────────────────────── */
     .registration-header {
         background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
         color: #fff;
-        padding: 40px;
+        padding: 44px 40px 36px;
         text-align: center;
+        position: relative;
+        overflow: hidden;
     }
 
-    .registration-header h1 {
-        font-size: 2em;
-        margin-bottom: 10px;
-    }
+        .registration-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
 
-    .registration-header p {
-        opacity: 0.95;
-        font-size: 1.05em;
-    }
+        .registration-header .school-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.8em;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
 
+        .registration-header h1 {
+            font-size: 2em;
+            margin: 0 0 10px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .registration-header p {
+            opacity: 0.88;
+            font-size: 1em;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+    /* ─── Progress Steps ──────────────────────────────── */
     .progress-steps {
         display: flex;
         justify-content: center;
-        align-items: center;
-        padding: 30px 40px;
+        align-items: flex-start;
+        padding: 32px 40px 28px;
         background: #f8f9fa;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e8eaed;
+        gap: 0;
     }
 
     .step {
         display: flex;
         flex-direction: column;
         align-items: center;
-        position: relative;
         flex: 1;
-        max-width: 200px;
+        max-width: 180px;
     }
 
-    .step-number {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
+    .step-connector {
+        flex: 1;
+        height: 3px;
         background: #e0e0e0;
-        color: #999;
+        margin-top: 21px;
+        border-radius: 2px;
+        max-width: 100px;
+        transition: background 0.4s;
+    }
+
+        .step-connector.done {
+            background: #28a745;
+        }
+
+    .step-number {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e8eaed;
+        color: #aaa;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 1.1em;
+        font-weight: 700;
+        font-size: 1em;
         margin-bottom: 10px;
         transition: all 0.3s;
+        position: relative;
         z-index: 2;
+    }
+
+    .step.active .step-number {
+        background: #0066cc;
+        color: #fff;
+        box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.18);
     }
 
     .step.completed .step-number {
@@ -76,62 +132,62 @@
         color: #fff;
     }
 
-    .step.active .step-number {
-        background: #0066cc;
-        color: #fff;
-        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
-    }
-
     .step-label {
-        font-size: 0.9em;
-        color: #666;
+        font-size: 0.82em;
+        color: #999;
         font-weight: 500;
+        text-align: center;
+        line-height: 1.3;
     }
 
     .step.active .step-label {
         color: #0066cc;
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .step.completed .step-label {
         color: #28a745;
+        font-weight: 600;
     }
 
-    .step-line {
-        position: absolute;
-        top: 22px;
-        left: 50%;
-        width: 100%;
-        height: 3px;
-        background: #e0e0e0;
-        z-index: 1;
-    }
-
-    .step.completed .step-line {
-        background: #28a745;
-    }
-
-    .step:last-child .step-line {
-        display: none;
-    }
-
+    /* ─── Form Body ───────────────────────────────────── */
     .form-content {
-        padding: 50px 40px;
+        padding: 48px 44px;
     }
 
     .section-title {
         color: #0066cc;
-        font-size: 1.4em;
-        margin-bottom: 25px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #f0f0f0;
+        font-size: 1.15em;
+        font-weight: 700;
+        margin-bottom: 22px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #eef2f7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: -0.01em;
+    }
+
+        .section-title .section-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 102, 204, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+    .section-spacer {
+        margin-top: 44px;
     }
 
     .form-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 25px;
-        margin-bottom: 25px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 22px;
+        margin-bottom: 22px;
     }
 
     .form-group {
@@ -139,66 +195,56 @@
         flex-direction: column;
     }
 
-    .form-group.full-width {
-        grid-column: 1 / -1;
-    }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
 
-    .form-group label {
-        color: #333;
-        font-weight: 600;
-        margin-bottom: 8px;
-        font-size: 0.95em;
-    }
+        .form-group label {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 7px;
+            font-size: 0.875em;
+            letter-spacing: 0.01em;
+        }
 
-    .form-group label span {
-        color: #dc3545;
-    }
+            .form-group label span.req {
+                color: #dc3545;
+                margin-left: 2px;
+            }
 
     .form-control {
         width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 1em;
-        transition: all 0.3s;
+        padding: 11px 14px;
+        border: 1.8px solid #e0e4ea;
+        border-radius: 9px;
+        font-size: 0.97em;
+        transition: border-color 0.25s, box-shadow 0.25s;
         outline: none;
         background: #fff;
+        color: #1a1a2e;
     }
 
-    .form-control:focus {
-        border-color: #0066cc;
-        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-    }
+        .form-control::placeholder {
+            color: #b0b8c4;
+        }
 
-    .file-upload-wrapper {
-        position: relative;
-        overflow: hidden;
-        display: inline-block;
-        width: 100%;
-    }
+        .form-control:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
 
-    .file-upload-label {
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.8em;
+        margin-top: 5px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 12px;
-        padding: 40px 20px;
-        border: 2px dashed #e0e0e0;
-        border-radius: 8px;
-        background: #f8f9fa;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-align: center;
+        gap: 4px;
     }
 
-    .file-upload-label:hover {
-        border-color: #0066cc;
-        background: #f0f6ff;
-    }
-
-    .file-upload-label.has-file {
-        border-color: #28a745;
-        background: #f0f8f4;
+    /* ─── File Upload ─────────────────────────────────── */
+    .file-upload-wrapper {
+        width: 100%;
     }
 
     .file-upload-input {
@@ -210,317 +256,426 @@
         z-index: -1;
     }
 
+    .file-upload-label {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 26px 24px;
+        border: 2px dashed #d0d7e2;
+        border-radius: 12px;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+        .file-upload-label:hover {
+            border-color: #0066cc;
+            background: #eef5ff;
+        }
+
+        .file-upload-label.has-file {
+            border-color: #28a745;
+            background: #f0faf4;
+            border-style: solid;
+        }
+
     .upload-icon {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(135deg, #0066cc 0%, #004db3 100%);
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #fff;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
+    }
+
+    .file-upload-label.has-file .upload-icon {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
     }
 
     .upload-text h4 {
-        color: #333;
-        margin-bottom: 5px;
-        font-size: 1em;
+        color: #374151;
+        margin: 0 0 4px;
+        font-size: 0.95em;
+        font-weight: 600;
     }
 
     .upload-text p {
-        color: #999;
-        font-size: 0.85em;
+        color: #9aa5b4;
+        font-size: 0.82em;
         margin: 0;
     }
 
-    .file-preview {
-        margin-top: 15px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        display: none;
+    .upload-or-badge {
+        margin-left: auto;
+        background: #0066cc;
+        color: #fff;
+        font-size: 0.75em;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 20px;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
-    .file-preview.show {
-        display: flex;
+    .file-upload-label.has-file .upload-or-badge {
+        background: #28a745;
+    }
+
+    /* ─── File Preview ────────────────────────────────── */
+    .file-preview {
+        margin-top: 12px;
+        padding: 14px 18px;
+        background: #f0faf4;
+        border: 1px solid #c3e6cb;
+        border-radius: 10px;
+        display: none;
         align-items: center;
         justify-content: space-between;
+        gap: 12px;
     }
+
+        .file-preview.show {
+            display: flex;
+        }
 
     .file-info {
         display: flex;
         align-items: center;
         gap: 12px;
+        min-width: 0;
     }
 
     .file-icon {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         background: #28a745;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #fff;
+        flex-shrink: 0;
     }
 
     .file-details h5 {
-        margin: 0;
-        color: #333;
-        font-size: 0.95em;
+        margin: 0 0 2px;
+        color: #1a3a25;
+        font-size: 0.88em;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
     }
 
     .file-details p {
         margin: 0;
-        color: #999;
-        font-size: 0.85em;
+        color: #5a9e6f;
+        font-size: 0.78em;
     }
 
     .remove-file {
-        background: #dc3545;
-        color: #fff;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9em;
-        transition: all 0.3s;
-    }
-
-    .remove-file:hover {
-        background: #c82333;
-    }
-
-    .text-danger {
+        background: #fff;
         color: #dc3545;
-        font-size: 0.875em;
-        margin-top: 5px;
+        border: 1.5px solid #dc3545;
+        padding: 7px 16px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 0.82em;
+        font-weight: 600;
+        transition: all 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
-    .alert {
-        padding: 15px 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+        .remove-file:hover {
+            background: #dc3545;
+            color: #fff;
+        }
 
+    /* ─── Alerts ──────────────────────────────────────── */
     .alert-info {
-        background: #e7f3ff;
-        border: 1px solid #b3d9ff;
-        color: #004085;
+        background: #eef5ff;
+        border: 1px solid #c3d9f7;
+        color: #1a4a80;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 32px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 0.9em;
+        line-height: 1.5;
     }
 
+        .alert-info svg {
+            flex-shrink: 0;
+            margin-top: 1px;
+            color: #0066cc;
+        }
+
+    .info-box {
+        background: #fffbeb;
+        border: 1px solid #f6d860;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 0.88em;
+        line-height: 1.6;
+        color: #7a5c00;
+    }
+
+        .info-box svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-box strong {
+            color: #5a4200;
+        }
+
+    /* ─── Actions ─────────────────────────────────────── */
     .form-actions {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 40px;
-        padding-top: 30px;
-        border-top: 2px solid #f0f0f0;
+        margin-top: 44px;
+        padding-top: 28px;
+        border-top: 2px solid #f0f3f7;
     }
 
     .btn {
-        padding: 14px 35px;
+        padding: 13px 30px;
         border: none;
-        border-radius: 8px;
-        font-size: 1.05em;
+        border-radius: 9px;
+        font-size: 0.97em;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.25s;
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 9px;
         text-decoration: none;
+        letter-spacing: 0.01em;
     }
 
     .btn-back {
-        background: #6c757d;
-        color: #fff;
+        background: #f1f3f5;
+        color: #555;
+        border: 1.5px solid #dde1e7;
     }
 
-    .btn-back:hover {
-        background: #5a6268;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
-    }
+        .btn-back:hover {
+            background: #e5e9ee;
+            color: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
 
     .btn-proceed {
-        background: #0066cc;
+        background: linear-gradient(135deg, #0066cc 0%, #004db3 100%);
         color: #fff;
+        box-shadow: 0 4px 14px rgba(0, 102, 204, 0.3);
     }
 
-    .btn-proceed:hover {
-        background: #004080;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+        .btn-proceed:hover {
+            background: linear-gradient(135deg, #0055b3 0%, #003d99 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn-proceed:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-proceed .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        .btn-proceed.loading .spinner {
+            display: block;
+        }
+
+        .btn-proceed.loading .btn-arrow {
+            display: none;
+        }
+
+        .btn-proceed.loading .btn-text::after {
+            content: '...';
+        }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
-    .info-box {
-        background: #fff3cd;
-        border: 1px solid #ffc107;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: start;
-        gap: 12px;
-    }
-
-    .info-box svg {
-        flex-shrink: 0;
-        margin-top: 2px;
-    }
-
+    /* ─── Responsive ──────────────────────────────────── */
     @@media (max-width: 768px) {
         .registration-wrapper {
-            padding: 30px 15px;
+            padding: 24px 12px;
         }
 
         .registration-header {
-            padding: 30px 20px;
+            padding: 32px 20px 28px;
         }
 
-        .registration-header h1 {
-            font-size: 1.5em;
-        }
+            .registration-header h1 {
+                font-size: 1.55em;
+            }
 
         .form-content {
-            padding: 30px 20px;
+            padding: 28px 20px;
         }
 
         .progress-steps {
-            padding: 20px 15px;
-            overflow-x: auto;
+            padding: 22px 16px 20px;
         }
 
-        .step {
-            min-width: 100px;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            font-size: 1em;
-        }
-
-        .step-label {
-            font-size: 0.8em;
+        .step-connector {
+            max-width: 50px;
         }
 
         .form-row {
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 16px;
+        }
+
+        .file-upload-label {
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .upload-or-badge {
+            margin-left: 0;
         }
 
         .form-actions {
-            flex-direction: column;
-            gap: 15px;
+            flex-direction: column-reverse;
+            gap: 12px;
         }
 
         .btn {
             width: 100%;
             justify-content: center;
         }
+
+        .file-details h5 {
+            max-width: 160px;
+        }
     }
 </style>
 
 <div class="registration-wrapper">
     <div class="registration-container">
+
         <div class="registration-header">
+            <div class="school-badge">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0 2 0V6.5a.5.5 0 0 0-.276-.447l-7.513-3.506z" />
+                    <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032z" />
+                </svg>
+                MITC Admissions
+            </div>
             <h1>Student Registration</h1>
             <p>Upload your academic credentials and passport photograph</p>
         </div>
 
         <div class="progress-steps">
             <div class="step completed">
-                <div class="step-number">✓</div>
-                <div class="step-label">Personal Info</div>
-                <div class="step-line"></div>
+                <div class="step-number">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                    </svg>
+                </div>
+                <div class="step-label">Personal<br>Details</div>
             </div>
+            <div class="step-connector done"></div>
             <div class="step active">
                 <div class="step-number">2</div>
                 <div class="step-label">Documents</div>
-                <div class="step-line"></div>
             </div>
+            <div class="step-connector"></div>
             <div class="step">
                 <div class="step-number">3</div>
-                <div class="step-label">Guardian Info</div>
-                <div class="step-line"></div>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-label">Review</div>
+                <div class="step-label">Payment &amp;<br>Submit</div>
             </div>
         </div>
 
         <div class="form-content">
-            <div class="alert alert-info">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <div class="alert-info">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                 </svg>
-                <span>Please upload clear, high-quality documents. Maximum file size: 5MB per document.</span>
+                <span>Upload clear, high-quality scans or photos. Maximum file size is <strong>5MB</strong> per document.</span>
             </div>
 
             <form asp-action="StepTwoRegistration" method="post" enctype="multipart/form-data" id="step2Form">
-                <h3 class="section-title">Examination Details (WAEC/NECO)</h3>
+
+                <h3 class="section-title">
+                    <span class="section-icon">
+                        <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
+                            <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
+                        </svg>
+                    </span>
+                    Examination Details (WAEC/NECO)
+                </h3>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="waecModel.ExaminationNumber">
-                            Examination Number <span>*</span>
-                        </label>
-                        <input asp-for="waecModel.ExaminationNumber"
-                               class="form-control"
-                               placeholder="Enter examination number"
-                               required />
+                        <label asp-for="waecModel.ExaminationNumber">Examination Number <span class="req">*</span></label>
+                        <input asp-for="waecModel.ExaminationNumber" class="form-control" placeholder="Enter examination number" required />
                         <span asp-validation-for="waecModel.ExaminationNumber" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="waecModel.ExaminationYear">
-                            Examination Year <span>*</span>
-                        </label>
-                        <input asp-for="waecModel.ExaminationYear"
-                               class="form-control"
-                               placeholder="e.g., 2023"
-                               type="text"
-                               maxlength="4"
-                               required />
+                        <label asp-for="waecModel.ExaminationYear">Examination Year <span class="req">*</span></label>
+                        <input asp-for="waecModel.ExaminationYear" class="form-control" placeholder="e.g. 2023" type="text" maxlength="4" required />
                         <span asp-validation-for="waecModel.ExaminationYear" class="text-danger"></span>
                     </div>
                 </div>
 
-                <div class="form-group full-width">
-                    <label asp-for="waecModel.WaecCertificate">
-                        WAEC/NECO Certificate <span>*</span>
-                    </label>
+                <div class="form-group full-width" style="margin-bottom: 8px;">
+                    <label asp-for="waecModel.WaecCertificate">WAEC/NECO Certificate <span class="req">*</span></label>
                     <div class="file-upload-wrapper">
-                        <input type="file"
-                               asp-for="waecModel.WaecCertificate"
-                               class="file-upload-input"
-                               id="waecUpload"
-                               accept=".pdf,.jpg,.jpeg,.png"
-                               required />
+                        <input type="file" asp-for="waecModel.WaecCertificate"
+                               class="file-upload-input" id="waecUpload"
+                               accept=".pdf,.jpg,.jpeg,.png" required />
                         <label for="waecUpload" class="file-upload-label" id="waecLabel">
                             <div class="upload-icon">
-                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
                                     <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
                                 </svg>
                             </div>
                             <div class="upload-text">
                                 <h4>Click to upload WAEC/NECO Certificate</h4>
-                                <p>Supported formats: PDF, JPG, PNG (Max: 5MB)</p>
+                                <p>Supported formats: PDF, JPG, PNG &nbsp;·&nbsp; Max 5MB</p>
                             </div>
+                            <span class="upload-or-badge">Browse</span>
                         </label>
                     </div>
                     <div class="file-preview" id="waecPreview">
                         <div class="file-info">
                             <div class="file-icon">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
                                 </svg>
                             </div>
@@ -529,50 +684,56 @@
                                 <p id="waecFileSize">0 KB</p>
                             </div>
                         </div>
-                        <button type="button" class="remove-file" onclick="removeFile('waec')">Remove</button>
+                        <button type="button" class="remove-file" onclick="removeFile('waec')">✕ Remove</button>
                     </div>
                     <span asp-validation-for="waecModel.WaecCertificate" class="text-danger"></span>
                 </div>
 
-                <h3 class="section-title" style="margin-top: 40px;">Passport Photograph</h3>
+                <div class="section-spacer">
+                    <h3 class="section-title">
+                        <span class="section-icon">
+                            <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
+                                <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z" />
+                            </svg>
+                        </span>
+                        Passport Photograph
+                    </h3>
+                </div>
 
                 <div class="info-box">
-                    <svg width="20" height="20" fill="#856404" viewBox="0 0 16 16">
+                    <svg width="18" height="18" fill="#856404" viewBox="0 0 16 16">
                         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
                     </svg>
                     <div>
-                        <strong>Photo Requirements:</strong> White or light blue background, recent photo (not older than 6 months), formal attire, clear face visible, no accessories covering face.
+                        <strong>Photo Requirements:</strong> White or light blue background · Recent photo (not older than 6 months) · Formal attire · Clear face, no accessories covering face.
                     </div>
                 </div>
 
-                <div class="form-group full-width">
-                    <label asp-for="passportModel.PassportPhoto">
-                        Passport Photograph <span>*</span>
-                    </label>
+                <div class="form-group full-width" style="margin-bottom: 8px;">
+                    <label asp-for="passportModel.PassportPhoto">Passport Photograph <span class="req">*</span></label>
                     <div class="file-upload-wrapper">
-                        <input type="file"
-                               asp-for="passportModel.PassportPhoto"
-                               class="file-upload-input"
-                               id="passportUpload"
-                               accept=".jpg,.jpeg,.png"
-                               required />
+                        <input type="file" asp-for="passportModel.PassportPhoto"
+                               class="file-upload-input" id="passportUpload"
+                               accept=".jpg,.jpeg,.png" required />
                         <label for="passportUpload" class="file-upload-label" id="passportLabel">
                             <div class="upload-icon">
-                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
                                     <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z" />
                                 </svg>
                             </div>
                             <div class="upload-text">
                                 <h4>Click to upload Passport Photo</h4>
-                                <p>Supported formats: JPG, PNG (Max: 5MB)</p>
+                                <p>Supported formats: JPG, PNG &nbsp;·&nbsp; Max 5MB</p>
                             </div>
+                            <span class="upload-or-badge">Browse</span>
                         </label>
                     </div>
                     <div class="file-preview" id="passportPreview">
                         <div class="file-info">
                             <div class="file-icon">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
                                     <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
                                 </svg>
@@ -582,23 +743,24 @@
                                 <p id="passportFileSize">0 KB</p>
                             </div>
                         </div>
-                        <button type="button" class="remove-file" onclick="removeFile('passport')">Remove</button>
+                        <button type="button" class="remove-file" onclick="removeFile('passport')">✕ Remove</button>
                     </div>
                     <span asp-validation-for="passportModel.PassportPhoto" class="text-danger"></span>
                 </div>
 
                 <div class="form-actions">
                     <a asp-action="StepOneRegistration" asp-controller="Account" class="btn btn-back">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                         </svg>
                         Back to Step 1
                     </a>
-                    <button type="submit" class="btn btn-proceed">
-                        Proceed to Next Step
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <button type="submit" class="btn btn-proceed" id="submitBtn">
+                        <span class="btn-text">Proceed to Review</span>
+                        <svg class="btn-arrow" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                         </svg>
+                        <div class="spinner"></div>
                     </button>
                 </div>
             </form>
@@ -612,13 +774,11 @@
     }
 
     <script>
-        // WAEC Certificate Upload
-        document.getElementById('waecUpload')?.addEventListener('change', function(e) {
+        document.getElementById('waecUpload')?.addEventListener('change', function (e) {
             handleFileUpload(e, 'waec');
         });
 
-        // Passport Photo Upload
-        document.getElementById('passportUpload')?.addEventListener('change', function(e) {
+        document.getElementById('passportUpload')?.addEventListener('change', function (e) {
             handleFileUpload(e, 'passport');
         });
 
@@ -626,32 +786,45 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            const maxSize = 5 * 1024 * 1024; // 5MB
+            const maxSize = 5 * 1024 * 1024;
             if (file.size > maxSize) {
                 alert('File size exceeds 5MB. Please upload a smaller file.');
                 event.target.value = '';
                 return;
             }
 
-            const label = document.getElementById(`${type}Label`);
-            const preview = document.getElementById(`${type}Preview`);
-            const fileName = document.getElementById(`${type}FileName`);
-            const fileSize = document.getElementById(`${type}FileSize`);
+            const label     = document.getElementById(`${type}Label`);
+            const preview   = document.getElementById(`${type}Preview`);
+            const fileName  = document.getElementById(`${type}FileName`);
+            const fileSize  = document.getElementById(`${type}FileSize`);
+            const badge     = label.querySelector('.upload-or-badge');
+            const iconTitle = label.querySelector('.upload-text h4');
 
             label.classList.add('has-file');
             preview.classList.add('show');
             fileName.textContent = file.name;
             fileSize.textContent = formatFileSize(file.size);
+            if (badge) badge.textContent = 'Uploaded ✓';
+            if (iconTitle) iconTitle.textContent = file.name.length > 38
+                ? file.name.substring(0, 38) + '…'
+                : file.name;
         }
 
         function removeFile(type) {
-            const input = document.getElementById(`${type}Upload`);
-            const label = document.getElementById(`${type}Label`);
-            const preview = document.getElementById(`${type}Preview`);
+            const input     = document.getElementById(`${type}Upload`);
+            const label     = document.getElementById(`${type}Label`);
+            const preview   = document.getElementById(`${type}Preview`);
+            const badge     = label.querySelector('.upload-or-badge');
+            const iconTitle = label.querySelector('.upload-text h4');
+            const origTitle = type === 'waec'
+                ? 'Click to upload WAEC/NECO Certificate'
+                : 'Click to upload Passport Photo';
 
             input.value = '';
             label.classList.remove('has-file');
             preview.classList.remove('show');
+            if (badge) badge.textContent = 'Browse';
+            if (iconTitle) iconTitle.textContent = origTitle;
         }
 
         function formatFileSize(bytes) {
@@ -659,13 +832,12 @@
             const k = 1024;
             const sizes = ['Bytes', 'KB', 'MB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
         }
 
-        // Form submission with loading state
-        document.getElementById('step2Form')?.addEventListener('submit', function() {
-            const btn = document.querySelector('.btn-proceed');
-            btn.innerHTML = '<span>Uploading...</span>';
+        document.getElementById('step2Form')?.addEventListener('submit', function () {
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
             btn.disabled = true;
         });
     </script>

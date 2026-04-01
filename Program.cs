@@ -1,10 +1,19 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Mitc_Registration_Portal.Configuration;
+using Mitc_Registration_Portal.Contracts.MailingService;
+using Mitc_Registration_Portal.Contracts.Messaging;
 using Mitc_Registration_Portal.Identity;
+using Mitc_Registration_Portal.Implementation.MailingService;
 using Mitc_Registration_Portal.Implementation.Repositories;
+using Mitc_Registration_Portal.Implementation.Services;
+using Mitc_Registration_Portal.Implementation.TemplateEngine;
 using Mitc_Registration_Portal.Interface.Repositories;
+using Mitc_Registration_Portal.Interface.TemplateEngine;
+using Mitc_Registration_Portal.Messaging;
 using Mitc_Registration_Portal.Models.DTOs.Students.Validation;
 using Mitc_Registration_Portal.Models.Entities;
 using Mitc_Registration_Portal.Persistence.Context;
@@ -27,7 +36,12 @@ builder.Services.Scan(scan => scan
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Hosted worker for TTL cleanup (registered explicitly as singleton).
+builder.Services.AddHostedService<RegistrationDraftCleanupWorker>();
+
 builder.Services.AddValidatorsFromAssemblyContaining<StudentValidation>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 builder.Services.AddDbContext<StudentDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("MITCContext"),
@@ -39,25 +53,42 @@ builder.Services.AddScoped<IRoleStore<Role>, RoleStore>();
 builder.Services.AddIdentity<User, Role>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IMailSender, MailSender>();
+builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("EmailConfiguration"));
+builder.Services.AddScoped<IRazorEngine, RazorEngine>();
+
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(15);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-  .AddCookie(config =>
-  {
-      config.LoginPath = "/User/login";
-      config.Cookie.Name = "Mitc_Registration_Portal";
-      config.LogoutPath = "/User/logout";
-      config.ExpireTimeSpan = TimeSpan.FromMinutes(15);
-      config.SlidingExpiration = true;
-  });
+    .AddCookie(config =>
+    {
+        config.LoginPath = "/User/login";
+        config.Cookie.Name = "Mitc_Registration_Portal";
+        config.LogoutPath = "/User/logout";
+        config.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+        config.SlidingExpiration = true;
+    });
+
 builder.Services.AddAuthorization();
+
 var app = builder.Build();
+
+// Apply migrations automatically in Development so local runs don't require manual update steps.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -77,9 +108,9 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=User}/{action=Login}/{id?}")
+        name: "default",
+        pattern: "{controller=User}/{action=Login}/{id?}")
     .WithStaticAssets();
 
-
 app.Run();
+

@@ -1,0 +1,39 @@
+@model Mitc_Registration_Portal.Models.DTOs.BaseResponse<bool>
+
+@{
+    ViewData["Title"] = "Payment Not Completed";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-2">We could not complete your registration</h2>
+                    <p class="text-muted mb-4">
+                        We received your callback, but the system could not confirm and finalize your registration.
+                    </p>
+
+                    @if (!string.IsNullOrWhiteSpace(Model?.Message))
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            @Model.Message
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary" asp-controller="Payment" asp-action="Index">Try Again</a>
+                        <a class="btn btn-outline-secondary" asp-controller="Student" asp-action="StepOneRegistration">Restart Registration</a>
+                        <a class="btn btn-link" asp-controller="User" asp-action="Login">Go To Login</a>
+                    </div>
+
+                    <hr class="my-4" />
+                    <p class="small text-muted mb-0">
+                        If you were charged but still see this page, please contact support with your Paystack reference.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

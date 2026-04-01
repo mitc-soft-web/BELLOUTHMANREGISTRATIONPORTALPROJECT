@@ -19,7 +19,7 @@ namespace Mitc_Registration_Portal.Implementation.Services
             
             var payment = new Payment
             {
-                Amount = 5000,
+                Amount = 100,
                 Reference = reference,
                 PaymentStatus = "Pending",
                 DateCreated = DateTime.UtcNow,
@@ -43,7 +43,7 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     Status = false
                 };
             }
-            return await _payStackService.Initialize(reference, 5000,email);
+            return await _payStackService.Initialize(reference, 100,email);
 
         }
 

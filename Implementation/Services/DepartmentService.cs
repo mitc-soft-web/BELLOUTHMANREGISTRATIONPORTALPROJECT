@@ -1,5 +1,4 @@
-﻿using Findx.Data;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Mitc_Registration_Portal.Interface.Repositories;
 using Mitc_Registration_Portal.Interface.Services;
 using Mitc_Registration_Portal.Models.DTOs;
@@ -19,7 +18,7 @@ namespace Mitc_Registration_Portal.Implementation.Services
             var departmentExists = await _departmentRepository.ExistByName(model.DepartmentName);
             if (departmentExists)
             {
-                _logger.LogError("Department already exists");
+                _logger.LogError("Department aleady exists");
                 return new BaseResponse<bool>
                 {
                     Message = $"Department with name {model.DepartmentName} already exists",
@@ -31,7 +30,7 @@ namespace Mitc_Registration_Portal.Implementation.Services
             {
                 DepartmentName = model.DepartmentName,
                 DepartmentalCode = model.DepartmentalCode,
-                DateCreated = DateTime.UtcNow
+                DateCreated =DateTime.UtcNow
             };
             var createDepartment = await _departmentRepository.Add<Department>(newDepartment);
             await _unitOfWOrk.SaveChangesAsync();
@@ -47,7 +46,7 @@ namespace Mitc_Registration_Portal.Implementation.Services
             _logger.LogInformation("Create Department Success");
             return new BaseResponse<bool>
             {
-                Message = "Create Department Success",
+                Message = "Crate Department Success",
                 Status = true,
 
             };
@@ -93,14 +92,11 @@ namespace Mitc_Registration_Portal.Implementation.Services
                         RegistrationNumber = std.RegistrationNumber,
                         MatricNumber = std.MatricNumber,
                         Gender = std.Gender,
-                        //DepartmentId = std.DepartmentId
-
                     }).ToList()
 
                 }).ToList()
             };
         }
-
         public async Task<BaseResponse<IEnumerable<DepartmentDtos>>> GetAllDepartmentsAsync()
         {
             var getAllDepartments = await _departmentRepository.GetAll<Department>();

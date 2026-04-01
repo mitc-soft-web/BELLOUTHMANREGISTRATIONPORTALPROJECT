@@ -3,9 +3,15 @@
 @{
     ViewData["Title"] = "Student Registration - Step 1";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var minDob = "1900-01-01";
+    var maxDob = DateTime.Today.AddYears(-14).ToString("yyyy-MM-dd");
 }
 
 <style>
+    * {
+        box-sizing: border-box;
+    }
+
     .registration-wrapper {
         min-height: 85vh;
         padding: 60px 20px;
@@ -16,35 +22,67 @@
         max-width: 900px;
         margin: 0 auto;
         background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border-radius: 18px;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
         overflow: hidden;
     }
 
+    /* ─── Header ─────────────────────────────────────── */
     .registration-header {
         background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
         color: #fff;
-        padding: 40px;
+        padding: 44px 40px 36px;
         text-align: center;
+        position: relative;
+        overflow: hidden;
     }
+
+        .registration-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .registration-header .school-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.8em;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
 
         .registration-header h1 {
             font-size: 2em;
-            margin-bottom: 10px;
+            margin: 0 0 10px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
         .registration-header p {
-            opacity: 0.95;
-            font-size: 1.05em;
+            opacity: 0.88;
+            font-size: 1em;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
 
+    /* ─── Progress Steps (3-step) ────────────────────── */
     .progress-steps {
         display: flex;
         justify-content: center;
-        align-items: center;
-        padding: 30px 40px;
+        align-items: flex-start;
+        padding: 32px 40px 28px;
         background: #f8f9fa;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e8eaed;
+        gap: 0;
     }
 
     .step {
@@ -53,29 +91,44 @@
         align-items: center;
         position: relative;
         flex: 1;
-        max-width: 200px;
+        max-width: 180px;
     }
 
-    .step-number {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
+    .step-connector {
+        flex: 1;
+        height: 3px;
         background: #e0e0e0;
-        color: #999;
+        margin-top: 21px;
+        border-radius: 2px;
+        max-width: 100px;
+        transition: background 0.4s;
+    }
+
+        .step-connector.done {
+            background: #28a745;
+        }
+
+    .step-number {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #e8eaed;
+        color: #aaa;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 1.1em;
+        font-weight: 700;
+        font-size: 1em;
         margin-bottom: 10px;
         transition: all 0.3s;
+        position: relative;
         z-index: 2;
     }
 
     .step.active .step-number {
         background: #0066cc;
         color: #fff;
-        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+        box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.18);
     }
 
     .step.completed .step-number {
@@ -84,47 +137,65 @@
     }
 
     .step-label {
-        font-size: 0.9em;
-        color: #666;
+        font-size: 0.82em;
+        color: #999;
         font-weight: 500;
+        text-align: center;
+        line-height: 1.3;
     }
 
     .step.active .step-label {
         color: #0066cc;
+        font-weight: 700;
+    }
+
+    .step.completed .step-label {
+        color: #28a745;
         font-weight: 600;
     }
 
-    .step-line {
-        position: absolute;
-        top: 22px;
-        left: 50%;
-        width: 100%;
-        height: 3px;
-        background: #e0e0e0;
-        z-index: 1;
-    }
-
-    .step:last-child .step-line {
-        display: none;
-    }
-
+    /* ─── Form Body ───────────────────────────────────── */
     .form-content {
-        padding: 50px 40px;
+        padding: 48px 44px;
     }
 
     .section-title {
         color: #0066cc;
-        font-size: 1.4em;
-        margin-bottom: 25px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #f0f0f0;
+        font-size: 1.15em;
+        font-weight: 700;
+        margin-bottom: 22px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #eef2f7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: -0.01em;
+    }
+
+        .section-title .section-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 102, 204, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section-title + .form-row {
+            margin-top: 0;
+        }
+
+    .section-spacer {
+        margin-top: 44px;
     }
 
     .form-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 25px;
-        margin-bottom: 25px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 22px;
+        margin-bottom: 22px;
     }
 
     .form-group {
@@ -137,166 +208,282 @@
         }
 
         .form-group label {
-            color: #333;
+            color: #374151;
             font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95em;
+            margin-bottom: 7px;
+            font-size: 0.875em;
+            letter-spacing: 0.01em;
         }
 
-            .form-group label span {
+            .form-group label span.req {
                 color: #dc3545;
+                margin-left: 2px;
             }
 
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
         width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 1em;
-        transition: all 0.3s;
+        padding: 11px 14px;
+        border: 1.8px solid #e0e4ea;
+        border-radius: 9px;
+        font-size: 0.97em;
+        transition: border-color 0.25s, box-shadow 0.25s;
         outline: none;
         background: #fff;
+        color: #1a1a2e;
     }
 
-        .form-control:focus, .form-select:focus {
+        .form-control::placeholder {
+            color: #b0b8c4;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
             border-color: #0066cc;
             box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-control.input-valid {
+            border-color: #28a745;
+        }
+
+        .form-control.input-error {
+            border-color: #dc3545;
         }
 
     .form-select {
         cursor: pointer;
         appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
-        background-position: right 15px center;
-        padding-right: 40px;
+        background-position: right 14px center;
+        padding-right: 38px;
     }
 
     textarea.form-control {
         resize: vertical;
         min-height: 100px;
+        line-height: 1.6;
     }
 
     .text-danger {
         color: #dc3545;
-        font-size: 0.875em;
+        font-size: 0.8em;
         margin-top: 5px;
-    }
-
-    .alert {
-        padding: 15px 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 4px;
     }
 
+    /* ─── Password Strength ───────────────────────────── */
+    .password-strength-bar {
+        height: 4px;
+        border-radius: 4px;
+        background: #e0e0e0;
+        margin-top: 8px;
+        overflow: hidden;
+    }
+
+    .password-strength-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 4px;
+        transition: width 0.3s, background 0.3s;
+    }
+
+    .strength-label {
+        font-size: 0.75em;
+        margin-top: 4px;
+        color: #888;
+        font-weight: 500;
+    }
+
+    /* ─── Password Eye Toggle ─────────────────────────── */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .password-wrapper .form-control {
+            padding-right: 44px;
+        }
+
+    .eye-toggle {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        color: #9aa5b4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+        outline: none;
+        border-radius: 4px;
+    }
+
+        .eye-toggle:hover {
+            color: #0066cc;
+        }
+
+        .eye-toggle:focus-visible {
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.3);
+        }
+
+        .eye-toggle .eye-off {
+            display: none;
+        }
+
+        .eye-toggle.visible .eye-on {
+            display: none;
+        }
+
+        .eye-toggle.visible .eye-off {
+            display: block;
+        }
+
+    /* ─── Info Alert ──────────────────────────────────── */
     .alert-info {
-        background: #e7f3ff;
-        border: 1px solid #b3d9ff;
-        color: #004085;
+        background: #eef5ff;
+        border: 1px solid #c3d9f7;
+        color: #1a4a80;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 32px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 0.9em;
+        line-height: 1.5;
     }
 
+        .alert-info svg {
+            flex-shrink: 0;
+            margin-top: 1px;
+            color: #0066cc;
+        }
+
+    /* ─── Actions ─────────────────────────────────────── */
     .form-actions {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 40px;
-        padding-top: 30px;
-        border-top: 2px solid #f0f0f0;
+        margin-top: 44px;
+        padding-top: 28px;
+        border-top: 2px solid #f0f3f7;
     }
 
     .btn {
-        padding: 14px 35px;
+        padding: 13px 30px;
         border: none;
-        border-radius: 8px;
-        font-size: 1.05em;
+        border-radius: 9px;
+        font-size: 0.97em;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.25s;
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 9px;
         text-decoration: none;
+        letter-spacing: 0.01em;
     }
 
     .btn-back {
-        background: #6c757d;
-        color: #fff;
+        background: #f1f3f5;
+        color: #555;
+        border: 1.5px solid #dde1e7;
     }
 
         .btn-back:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+            background: #e5e9ee;
+            color: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
     .btn-proceed {
-        background: #0066cc;
+        background: linear-gradient(135deg, #0066cc 0%, #004db3 100%);
         color: #fff;
+        box-shadow: 0 4px 14px rgba(0, 102, 204, 0.3);
     }
 
         .btn-proceed:hover {
-            background: #004080;
+            background: linear-gradient(135deg, #0055b3 0%, #003d99 100%);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.4);
         }
 
-    .required-note {
-        color: #666;
-        font-size: 0.9em;
-        margin-bottom: 30px;
-        padding: 12px;
-        background: #f8f9fa;
-        border-radius: 6px;
-        border-left: 4px solid #0066cc;
+        .btn-proceed:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-proceed .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        .btn-proceed.loading .spinner {
+            display: block;
+        }
+
+        .btn-proceed.loading .btn-arrow {
+            display: none;
+        }
+
+        .btn-proceed.loading .btn-text::after {
+            content: '...';
+        }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
+    /* ─── Responsive ──────────────────────────────────── */
     @@media (max-width: 768px) {
         .registration-wrapper {
-            padding: 30px 15px;
+            padding: 24px 12px;
         }
 
         .registration-header {
-            padding: 30px 20px;
+            padding: 32px 20px 28px;
         }
 
             .registration-header h1 {
-                font-size: 1.5em;
+                font-size: 1.55em;
             }
 
         .form-content {
-            padding: 30px 20px;
+            padding: 28px 20px;
         }
 
         .progress-steps {
-            padding: 20px 15px;
-            overflow-x: auto;
+            padding: 22px 16px 20px;
         }
 
-        .step {
-            min-width: 100px;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            font-size: 1em;
-        }
-
-        .step-label {
-            font-size: 0.8em;
+        .step-connector {
+            max-width: 50px;
         }
 
         .form-row {
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 16px;
         }
 
         .form-actions {
-            flex-direction: column;
-            gap: 15px;
+            flex-direction: column-reverse;
+            gap: 12px;
         }
 
         .btn {
@@ -308,60 +495,71 @@
 
 <div class="registration-wrapper">
     <div class="registration-container">
+
         <div class="registration-header">
+            <div class="school-badge">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0 2 0V6.5a.5.5 0 0 0-.276-.447l-7.513-3.506z" />
+                    <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032z" />
+                </svg>
+                MITC Admissions
+            </div>
             <h1>Student Registration</h1>
-            <p>Join Masroor International Technical College and start your journey to technical excellence</p>
+            <p>Join Masroor International Technical College and begin your journey to technical excellence</p>
         </div>
+
 
         <div class="progress-steps">
             <div class="step active">
                 <div class="step-number">1</div>
-                <div class="step-label">Personal Info</div>
-                <div class="step-line"></div>
+                <div class="step-label">Personal<br>Details</div>
             </div>
+            <div class="step-connector"></div>
             <div class="step">
                 <div class="step-number">2</div>
-                <div class="step-label">Education</div>
-                <div class="step-line"></div>
+                <div class="step-label">Documents</div>
             </div>
+            <div class="step-connector"></div>
             <div class="step">
                 <div class="step-number">3</div>
-                <div class="step-label">Documents</div>
-                <div class="step-line"></div>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-label">Review</div>
+                <div class="step-label">Payment &amp;<br>Submit</div>
             </div>
         </div>
 
+
         <div class="form-content">
-            <div class="alert alert-info">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <div class="alert-info">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                     <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                 </svg>
-                <span>Please fill in all required fields marked with an asterisk (*) to proceed to the next step.</span>
+                <span>Fields marked with <strong>*</strong> are required. Complete all sections on this page before proceeding to Step 2.</span>
             </div>
 
-            <form asp-action="StepOneRegistration" method="post">
-                <h3 class="section-title">Personal Information</h3>
+            <form asp-action="StepOneRegistration" method="post" id="registrationForm">
+
+                <h3 class="section-title">
+                    <span class="section-icon">
+                        <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.29 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                        </svg>
+                    </span>
+                    Personal Information
+                </h3>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="FirstName">First Name <span>*</span></label>
+                        <label asp-for="FirstName">First Name <span class="req">*</span></label>
                         <input asp-for="FirstName" class="form-control" placeholder="Enter first name" required />
                         <span asp-validation-for="FirstName" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
                         <label asp-for="MiddleName">Middle Name</label>
-                        <input asp-for="MiddleName" class="form-control" placeholder="Enter middle name" />
+                        <input asp-for="MiddleName" class="form-control" placeholder="Enter middle name (optional)" />
                         <span asp-validation-for="MiddleName" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="LastName">Last Name <span>*</span></label>
+                        <label asp-for="LastName">Last Name <span class="req">*</span></label>
                         <input asp-for="LastName" class="form-control" placeholder="Enter last name" required />
                         <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
@@ -369,103 +567,161 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="DateOfBirth">Date of Birth <span>*</span></label>
-                        <input asp-for="DateOfBirth" type="date" class="form-control" required />
+                        <label asp-for="DateOfBirth">Date of Birth <span class="req">*</span></label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control " min="1900-01-01"
+                               max="@DateTime.Today.AddYears(-10).ToString("yyyy-MM-dd")" onkeydown="return false" onkeypress="return false" onpaste />
                         <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="Gender" class="form-label"></label>
-                        <select asp-for="Gender" asp-items="@Html.GetEnumSelectList(typeof(Gender))" required>
+                        <label asp-for="Gender">Gender <span class="req">*</span></label>
+                        <select asp-for="Gender" class="form-select" asp-items="@Html.GetEnumSelectList(typeof(Gender))" required>
+                            <option value="">-- Select Gender --</option>
                         </select>
                         <span asp-validation-for="Gender" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="NIN">National ID Number (NIN) <span>*</span></label>
-                        <input asp-for="NIN" class="form-control" placeholder="Enter NIN" maxlength="11" required />
+                        <label asp-for="NIN">National ID Number (NIN) <span class="req">*</span></label>
+                        <input asp-for="NIN" class="form-control" placeholder="Enter 11-digit NIN" maxlength="11" required />
                         <span asp-validation-for="NIN" class="text-danger"></span>
                     </div>
                 </div>
 
-                <h3 class="section-title" style="margin-top: 40px;">Contact Information</h3>
+                <div class="section-spacer">
+                    <h3 class="section-title">
+                        <span class="section-icon">
+                            <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                            </svg>
+                        </span>
+                        Contact Information
+                    </h3>
+                </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="Email">Email Address <span>*</span></label>
+                        <label asp-for="Email">Email Address <span class="req">*</span></label>
                         <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com" required />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="PhoneNumber">Phone Number <span>*</span></label>
-                        <input asp-for="PhoneNumber" class="form-control" placeholder="+234 000 000 0000" required />
+                        <label asp-for="PhoneNumber">Phone Number <span class="req">*</span></label>
+                        <input asp-for="PhoneNumber" class="form-control" inputmode="numeric" pattern="[0-9]*" maxlength="11"/>
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group full-width">
-                        <label asp-for="Address">Home Address <span>*</span></label>
-                        <textarea asp-for="Address" class="form-control" placeholder="Enter full address" required></textarea>
+                        <label asp-for="Address">Home Address <span class="req">*</span></label>
+                        <textarea asp-for="Address" class="form-control" placeholder="Enter your full residential address" required></textarea>
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="City">City <span>*</span></label>
+                        <label asp-for="City">City <span class="req">*</span></label>
                         <input asp-for="City" class="form-control" placeholder="Enter city" required />
                         <span asp-validation-for="City" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="State">State <span>*</span></label>
+                        <label asp-for="State">State <span class="req">*</span></label>
                         <input asp-for="State" class="form-control" placeholder="Enter state" required />
                         <span asp-validation-for="State" class="text-danger"></span>
                     </div>
                 </div>
 
-                <h3 class="section-title" style="margin-top: 40px;">Academic Information</h3>
+                <div class="section-spacer">
+                    <h3 class="section-title">
+                        <span class="section-icon">
+                            <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
+                                <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z" />
+                            </svg>
+                        </span>
+                        Academic Information
+                    </h3>
+                </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="DepartmentId">Select Department <span>*</span></label>
-                        <select asp-for="DepartmentId" class="form-select" asp-items="Model.DepartmentsSelectListItems" required>
+                        <label asp-for="DepartmentId">Select Department <span class="req">*</span></label>
+                        <select asp-for="DepartmentId" class="form-select" asp-items="Model.DepartmentsSelectListItems" >
                             <option value="">-- Choose Department --</option>
                         </select>
                         <span asp-validation-for="DepartmentId" class="text-danger"></span>
                     </div>
                 </div>
 
-                <h3 class="section-title" style="margin-top: 40px;">Account Security</h3>
+                <div class="section-spacer">
+                    <h3 class="section-title">
+                        <span class="section-icon">
+                            <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                            </svg>
+                        </span>
+                        Account Security
+                    </h3>
+                </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label asp-for="Password">Password <span>*</span></label>
-                        <input asp-for="Password" type="password" class="form-control" placeholder="Create a strong password" required />
+                        <label asp-for="Password">Password <span class="req">*</span></label>
+                        <div class="password-wrapper">
+                            <input asp-for="Password" type="password" class="form-control" id="passwordInput" placeholder="Create a strong password" required />
+                            <button type="button" class="eye-toggle" id="togglePassword" aria-label="Show password" tabindex="-1">
+                                <svg class="eye-on" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                </svg>
+                                <svg class="eye-off" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z" />
+                                    <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z" />
+                                    <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709z" />
+                                    <path fill-rule="evenodd" d="M13.646 14.354l-12-12 .708-.708 12 12-.708.708z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-strength-bar">
+                            <div class="password-strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-label" id="strengthLabel"></div>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="ConfirmPassword">Confirm Password <span>*</span></label>
-                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Re-enter password" required />
+                        <label asp-for="ConfirmPassword">Confirm Password <span class="req">*</span></label>
+                        <div class="password-wrapper">
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" id="confirmPasswordInput" placeholder="Re-enter your password" required />
+                            <button type="button" class="eye-toggle" id="toggleConfirm" aria-label="Show confirm password" tabindex="-1">
+                                <svg class="eye-on" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                </svg>
+                                <svg class="eye-off" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z" />
+                                    <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z" />
+                                    <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709z" />
+                                    <path fill-rule="evenodd" d="M13.646 14.354l-12-12 .708-.708 12 12-.708.708z" />
+                                </svg>
+                            </button>
+                        </div>
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
                 </div>
 
+              
                 <div class="form-actions">
                     <a asp-action="Login" asp-controller="User" class="btn btn-back">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                         </svg>
                         Back to Login
                     </a>
-                    <button type="submit" class="btn btn-proceed">
-                        Proceed to Next Step
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <button type="submit" class="btn btn-proceed" id="submitBtn">
+                        <span class="btn-text">Proceed to Step 2</span>
+                        <svg class="btn-arrow" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                         </svg>
+                        <div class="spinner"></div>
                     </button>
                 </div>
             </form>
@@ -479,38 +735,65 @@
     }
 
     <script>
-        // Password strength indicator
-        document.querySelector('input[name="Password"]')?.addEventListener('input', function(e) {
-            const password = e.target.value;
-            const strength = calculatePasswordStrength(password);
-            // Add visual feedback here
-        });
-
-        function calculatePasswordStrength(password) {
-            let strength = 0;
-            if (password.length >= 8) strength++;
-            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-            if (/\d/.test(password)) strength++;
-            if (/[^a-zA-Z\d]/.test(password)) strength++;
-            return strength;
+        // ── Eye toggles ────────────────────────────────────
+        function setupEyeToggle(toggleId, inputId) {
+            const btn   = document.getElementById(toggleId);
+            const input = document.getElementById(inputId);
+            if (!btn || !input) return;
+            btn.addEventListener('click', function () {
+                const isVisible = input.type === 'text';
+                input.type = isVisible ? 'password' : 'text';
+                btn.classList.toggle('visible', !isVisible);
+                btn.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+            });
         }
 
-        // Confirm password validation
-        document.querySelector('input[name="ConfirmPassword"]')?.addEventListener('input', function(e) {
-            const password = document.querySelector('input[name="Password"]').value;
-            const confirm = e.target.value;
+        setupEyeToggle('togglePassword', 'passwordInput');
+        setupEyeToggle('toggleConfirm',  'confirmPasswordInput');
 
-            if (password !== confirm && confirm.length > 0) {
-                e.target.style.borderColor = '#dc3545';
-            } else {
-                e.target.style.borderColor = '#0066cc';
-            }
+        // ── Password strength ──────────────────────────────
+        const passwordInput = document.getElementById('passwordInput');
+        const strengthFill  = document.getElementById('strengthFill');
+        const strengthLabel = document.getElementById('strengthLabel');
+
+        const strengthConfig = [
+            { label: '',          color: '#e0e0e0', width: '0%'   },
+            { label: 'Weak',      color: '#dc3545', width: '25%'  },
+            { label: 'Fair',      color: '#fd7e14', width: '50%'  },
+            { label: 'Weak',      color: '#ffc107', width: '75%'  },
+            { label: 'Strong',    color: '#28a745', width: '100%' },
+        ];
+
+        function getStrength(pw) {
+            let s = 0;
+            if (pw.length >= 8)                              s++;
+            if (/[a-z]/.test(pw) && /[A-Z]/.test(pw))       s++;
+            if (/\d/.test(pw))                               s++;
+            if (/[^a-zA-Z\d]/.test(pw))                     s++;
+            return s;
+        }
+
+        passwordInput?.addEventListener('input', function () {
+            const s = getStrength(this.value);
+            const cfg = strengthConfig[s] || strengthConfig[0];
+            strengthFill.style.width     = this.value ? cfg.width : '0%';
+            strengthFill.style.background = cfg.color;
+            strengthLabel.textContent    = this.value ? cfg.label : '';
+            strengthLabel.style.color    = cfg.color;
         });
 
-        // Form submission loading state
-        document.querySelector('form')?.addEventListener('submit', function() {
-            const btn = document.querySelector('.btn-proceed');
-            btn.innerHTML = '<span>Processing...</span>';
+        // ── Confirm password ───────────────────────────────
+        document.getElementById('confirmPasswordInput')?.addEventListener('input', function () {
+            const match = this.value === passwordInput.value;
+            this.style.borderColor = this.value.length
+                ? (match ? '#28a745' : '#dc3545')
+                : '';
+        });
+
+        // ── Submit loading state ───────────────────────────
+        document.getElementById('registrationForm')?.addEventListener('submit', function () {
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
             btn.disabled = true;
         });
     </script>

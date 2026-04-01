@@ -298,18 +298,18 @@
         <nav>
             <div class="container">
                 <div class="logo">
-                    <a asp-area="" asp-controller="Admin" asp-action="Dashboard">
+                    <a asp-area="" asp-controller="Student" asp-action="GetAllStudent">
                         <img src="https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg" alt="MITC Logo">
                     </a>
                 </div>
                 <ul class="nav-menu" id="navMenu">
-                    <li><a asp-area="" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+                    <li><a asp-area="" asp-controller="Student" asp-action="GetAllStudent">Dashboard</a></li>
 
                     <li class="has-dropdown">
                         <a href="#students">Students</a>
                         <ul class="dropdown">
                             <li><a asp-area="" asp-controller="Student" asp-action="AllStudents">All Students</a></li>
-                            <li><a asp-area="" asp-controller="Admin" asp-action="AddStudent">Add Student</a></li>
+                            @* <li><a asp-area="" asp-controller="Admin" asp-action="AddStudent">Add Student</a></li> *@
                             <li><a asp-area="" asp-controller="Admin" asp-action="StudentAdmissions">Admissions</a></li>
                             <li><a asp-area="" asp-controller="Admin" asp-action="StudentAttendance">Attendance</a></li>
                         </ul>
@@ -332,14 +332,14 @@
                         </ul>
                     </li> *@
 
-                    <li class="has-dropdown">
+                  @*   <li class="has-dropdown">
                         <a href="#results">Results</a>
                         <ul class="dropdown">
                             <li><a asp-area="" asp-controller="Admin" asp-action="ViewResults">View Results</a></li>
                             <li><a asp-area="" asp-controller="Admin" asp-action="UploadResults">Upload Results</a></li>
                             <li><a asp-area="" asp-controller="Admin" asp-action="GenerateReports">Generate Reports</a></li>
                         </ul>
-                    </li>
+                    </li> *@
 
                     @* <li class="has-dropdown">
                         <a href="#finance">Finance</a>
@@ -350,14 +350,14 @@
                         </ul>
                     </li> *@
 
-                    <li class="has-dropdown">
+                    @* <li class="has-dropdown">
                         <a href="#reports">Department</a>
                         <ul class="dropdown">
                             <li><a asp-area="" asp-controller="Department" asp-action="CreateDepartment">Department</a></li>
-                            @* <li><a asp-area="" asp-controller="Department" asp-action="AttendanceReports">Attendance Reports</a></li>
-                            <li><a asp-area="" asp-controller="Department" asp-action="EnrollmentReports">Enrollment Reports</a></li> *@
+                             <li><a asp-area="" asp-controller="Department" asp-action="AttendanceReports">Attendance Reports</a></li>
+                            <li><a asp-area="" asp-controller="Department" asp-action="EnrollmentReports">Enrollment Reports</a></li> 
                         </ul>
-                    </li>
+                    </li> *@
 
                   @*   <li class="has-dropdown">
                         <a href="#settings">Settings</a>
@@ -372,7 +372,7 @@
                     @* <li><a asp-area="" asp-controller="Admin" asp-action="Notifications">Notifications</a></li> *@
 
                     <li>
-                        <form method="post" asp-area="" asp-controller="Account" asp-action="Logout" style="margin: 0;">
+                        <form method="post" asp-area="" asp-controller="User" asp-action="Logout" style="margin: 0;">
                             <button type="submit" class="btn-logout" style="cursor: pointer; border: none;">Logout</button>
                         </form>
                     </li>

@@ -25,7 +25,8 @@ namespace Mitc_Registration_Portal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DepartmentalCode = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,11 +39,11 @@ namespace Mitc_Registration_Portal.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StudentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     PassportUrl = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsBackgroundWhite = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,7 +56,6 @@ namespace Mitc_Registration_Portal.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StudentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Amount = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     Reference = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -63,7 +63,8 @@ namespace Mitc_Registration_Portal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PaidAt = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,7 +81,8 @@ namespace Mitc_Registration_Portal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,7 +100,8 @@ namespace Mitc_Registration_Portal.Migrations
                     EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     PasswordHash = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,12 +114,12 @@ namespace Mitc_Registration_Portal.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StudentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ExaminationYear = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ExaminationNumber = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -131,6 +134,7 @@ namespace Mitc_Registration_Portal.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     FirstName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -161,7 +165,8 @@ namespace Mitc_Registration_Portal.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     RoleId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -212,6 +217,7 @@ namespace Mitc_Registration_Portal.Migrations
                     DepartmentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsDelete = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     FirstName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -261,27 +267,27 @@ namespace Mitc_Registration_Portal.Migrations
 
             migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "Id", "DateCreated", "Description", "Name" },
+                columns: new[] { "Id", "DateCreated", "Description", "IsDelete", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("c8ca0f28-cef1-4327-9d76-70b6dcc3e137"), new DateTime(2026, 1, 22, 13, 30, 45, 277, DateTimeKind.Utc).AddTicks(9040), "Can Check Admission Status and other things", "Student" },
-                    { new Guid("d2719e67-52f4-4f9c-bdb2-123456789abc"), new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Has full permissions", "Admin" }
+                    { new Guid("56789c4e-92e2-41a7-92c2-4292f0df5f26"), new DateTime(2026, 3, 9, 13, 6, 50, 158, DateTimeKind.Utc).AddTicks(8309), "Can Check Admission Status and other things", false, "Student" },
+                    { new Guid("d2719e67-52f4-4f9c-bdb2-123456789abc"), new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Has full permissions", false, "Admin" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "DateCreated", "Email", "EmailConfirmed", "PasswordHash" },
-                values: new object[] { new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42"), new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Admin001@gmail.com", true, "AQAAAAIAAYagAAAAEJjieFsJGM2Xgr+WpuS3juOABbBCvbqSvpym4WzP/SDMuvGz6qH+EFgm19l8SUHUGA==" });
+                columns: new[] { "Id", "DateCreated", "Email", "EmailConfirmed", "IsDelete", "PasswordHash" },
+                values: new object[] { new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42"), new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Admin001@gmail.com", true, false, "AQAAAAIAAYagAAAAEJjieFsJGM2Xgr+WpuS3juOABbBCvbqSvpym4WzP/SDMuvGz6qH+EFgm19l8SUHUGA==" });
 
             migrationBuilder.InsertData(
                 table: "Admins",
-                columns: new[] { "Id", "Address", "DateCreated", "DateOfBirth", "FirstName", "Gender", "LastName", "PhoneNumber", "UserId" },
-                values: new object[] { new Guid("f0e25b73-7d1a-4c19-8b2f-09a3efb40d12"), "Lagos State", new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1997, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Admin", (byte)1, "Hms", "+2349020880996", new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42") });
+                columns: new[] { "Id", "Address", "DateCreated", "DateOfBirth", "FirstName", "Gender", "IsDelete", "LastName", "PhoneNumber", "UserId" },
+                values: new object[] { new Guid("f0e25b73-7d1a-4c19-8b2f-09a3efb40d12"), "Lagos State", new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(1997, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Admin", (byte)1, false, "Hms", "+2349020880996", new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42") });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
-                columns: new[] { "Id", "DateCreated", "RoleId", "UserId" },
-                values: new object[] { new Guid("7ad9b1e1-4c23-46a2-b8e4-219ab417f71f"), new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), new Guid("d2719e67-52f4-4f9c-bdb2-123456789abc"), new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42") });
+                columns: new[] { "Id", "DateCreated", "IsDelete", "RoleId", "UserId" },
+                values: new object[] { new Guid("7ad9b1e1-4c23-46a2-b8e4-219ab417f71f"), new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc), false, new Guid("d2719e67-52f4-4f9c-bdb2-123456789abc"), new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Admins_UserId",

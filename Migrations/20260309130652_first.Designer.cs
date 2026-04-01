@@ -12,7 +12,7 @@ using Mitc_Registration_Portal.Persistence.Context;
 namespace Mitc_Registration_Portal.Migrations
 {
     [DbContext(typeof(StudentDbContext))]
-    [Migration("20260122133047_first")]
+    [Migration("20260309130652_first")]
     partial class first
     {
         /// <inheritdoc />
@@ -48,6 +48,9 @@ namespace Mitc_Registration_Portal.Migrations
                     b.Property<byte?>("Gender")
                         .HasColumnType("tinyint unsigned");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -75,6 +78,7 @@ namespace Mitc_Registration_Portal.Migrations
                             DateOfBirth = new DateTime(1997, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             FirstName = "Admin",
                             Gender = (byte)1,
+                            IsDelete = false,
                             LastName = "Hms",
                             PhoneNumber = "+2349020880996",
                             UserId = new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42")
@@ -98,6 +102,9 @@ namespace Mitc_Registration_Portal.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Departments");
@@ -115,12 +122,12 @@ namespace Mitc_Registration_Portal.Migrations
                     b.Property<bool>("IsBackgroundWhite")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("PassportUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -139,6 +146,9 @@ namespace Mitc_Registration_Portal.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("PaidAt")
                         .HasColumnType("longtext");
 
@@ -149,9 +159,6 @@ namespace Mitc_Registration_Portal.Migrations
                     b.Property<string>("Reference")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -171,6 +178,9 @@ namespace Mitc_Registration_Portal.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -185,13 +195,15 @@ namespace Mitc_Registration_Portal.Migrations
                             Id = new Guid("d2719e67-52f4-4f9c-bdb2-123456789abc"),
                             DateCreated = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Has full permissions",
+                            IsDelete = false,
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("c8ca0f28-cef1-4327-9d76-70b6dcc3e137"),
-                            DateCreated = new DateTime(2026, 1, 22, 13, 30, 45, 277, DateTimeKind.Utc).AddTicks(9040),
+                            Id = new Guid("56789c4e-92e2-41a7-92c2-4292f0df5f26"),
+                            DateCreated = new DateTime(2026, 3, 9, 13, 6, 50, 158, DateTimeKind.Utc).AddTicks(8309),
                             Description = "Can Check Admission Status and other things",
+                            IsDelete = false,
                             Name = "Student"
                         });
                 });
@@ -234,6 +246,9 @@ namespace Mitc_Registration_Portal.Migrations
                         .HasColumnType("tinyint unsigned");
 
                     b.Property<bool>("IsAdmitted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsDelete")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LastName")
@@ -319,6 +334,9 @@ namespace Mitc_Registration_Portal.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
 
@@ -336,6 +354,7 @@ namespace Mitc_Registration_Portal.Migrations
                             DateCreated = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "Admin001@gmail.com",
                             EmailConfirmed = true,
+                            IsDelete = false,
                             PasswordHash = "AQAAAAIAAYagAAAAEJjieFsJGM2Xgr+WpuS3juOABbBCvbqSvpym4WzP/SDMuvGz6qH+EFgm19l8SUHUGA=="
                         });
                 });
@@ -348,6 +367,9 @@ namespace Mitc_Registration_Portal.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("char(36)");
@@ -368,6 +390,7 @@ namespace Mitc_Registration_Portal.Migrations
                         {
                             Id = new Guid("7ad9b1e1-4c23-46a2-b8e4-219ab417f71f"),
                             DateCreated = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDelete = false,
                             RoleId = new Guid("d2719e67-52f4-4f9c-bdb2-123456789abc"),
                             UserId = new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42")
                         });
@@ -390,8 +413,8 @@ namespace Mitc_Registration_Portal.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("char(36)");
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 

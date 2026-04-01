@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Mitc_Registration_Portal.Models.Enums;
 
 namespace Mitc_Registration_Portal.Models.DTOs.Students
@@ -19,6 +20,7 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students
         public string Email { get; set; }
         public string NIN { get; set; }
         public Guid DepartmentId { get; set; }
-        public IEnumerable<SelectListItem> DepartmentsSelectListItems { get; set; }
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? DepartmentsSelectListItems { get; set; }
     }
 }

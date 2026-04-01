@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Mitc_Registration_Portal.Models.Entities;
@@ -9,35 +9,33 @@ namespace Mitc_Registration_Portal.Persistence.Context
     {
         public StudentDbContext(DbContextOptions options) : base(options)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Admin>()
-            .HasOne(a => a.User)
-            .WithOne(u => u.Admin)
-            .HasForeignKey<Admin>(a => a.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(a => a.User)
+                .WithOne(u => u.Admin)
+                .HasForeignKey<Admin>(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Admin>()
-            .Property(a => a.Gender)
-            .HasConversion<byte>();
+                .Property(a => a.Gender)
+                .HasConversion<byte>();
 
             SeedAdminData(builder);
-
             SeedRoleData(builder);
 
             builder.Entity<Student>()
-             .HasOne(c => c.User)
-             .WithOne(u => u.Student)
-             .HasForeignKey<Student>(c => c.UserId)
-             .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(c => c.User)
+                .WithOne(u => u.Student)
+                .HasForeignKey<Student>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<UserRole>()
-            .HasOne(ur => ur.User)
-            .WithMany(u => u.UserRoles)
-            .HasForeignKey(ur => ur.UserId);
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles)
+                .HasForeignKey(ur => ur.UserId);
 
             builder.Entity<UserRole>()
                 .HasOne(ur => ur.Role)
@@ -45,8 +43,8 @@ namespace Mitc_Registration_Portal.Persistence.Context
                 .HasForeignKey(ur => ur.RoleId);
 
             builder.Entity<User>()
-           .HasIndex(u => u.Email)
-           .IsUnique();
+                .HasIndex(u => u.Email)
+                .IsUnique();
 
             builder.Entity<Department>()
                 .HasMany(s => s.Students)
@@ -60,22 +58,42 @@ namespace Mitc_Registration_Portal.Persistence.Context
                 .HasForeignKey<Student>(s => s.PassportId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-             builder.Entity<Student>()
+            builder.Entity<Student>()
                 .HasOne(d => d.Waec)
                 .WithOne(s => s.Student)
                 .HasForeignKey<Student>(s => s.WaecId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Student>()
-            .HasOne(d => d.Payment)
-            .WithOne(s => s.Student)
-            .HasForeignKey<Student>(s => s.PaymentId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(d => d.Payment)
+                .WithOne(s => s.Student)
+                .HasForeignKey<Student>(s => s.PaymentId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            // In-progress registration state for idempotent retries + payment callback reliability.
+            builder.Entity<RegistrationDraft>()
+                .Property(d => d.Email)
+                .HasMaxLength(255);
+
+            builder.Entity<RegistrationDraft>()
+                .Property(d => d.CurrentPaymentReference)
+                .HasMaxLength(100);
+
+            builder.Entity<RegistrationDraft>()
+                .HasIndex(d => d.Email)
+                .IsUnique();
+
+            builder.Entity<RegistrationDraft>()
+                .HasIndex(d => d.CurrentPaymentReference)
+                .IsUnique();
+
+            builder.Entity<RegistrationDraft>()
+                .Property(d => d.Gender)
+                .HasConversion<byte?>();
         }
+
         private void SeedAdminData(ModelBuilder modelBuilder)
         {
-
             var adminRoleId = new Guid("d2719e67-52f4-4f9c-bdb2-123456789abc");
             var adminUserId = new Guid("c8f2e5ab-9f34-4b97-8b7c-1a5e86c77e42");
 
@@ -98,7 +116,6 @@ namespace Mitc_Registration_Portal.Persistence.Context
                 EmailConfirmed = true,
                 DateCreated = DateTime.SpecifyKind(new DateTime(2025, 11, 10), DateTimeKind.Utc),
             };
-
 
             var userRole = new UserRole
             {
@@ -126,21 +143,18 @@ namespace Mitc_Registration_Portal.Persistence.Context
             modelBuilder.Entity<User>().HasData(adminUser);
             modelBuilder.Entity<UserRole>().HasData(userRole);
         }
+
         private void SeedRoleData(ModelBuilder modelBuilder)
         {
-            var roles = new List<Role>
+            var studentRole = new Role
             {
-                new Role
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Student",
-                    Description = "Can Check Admission Status and other things",
-                    DateCreated = DateTime.UtcNow,
-                },
-
+                Id = new Guid("8b4a6f3d-1a1e-4ff3-8b9a-0fd0c3f1a2b3"),
+                Name = "Student",
+                Description = "Can Check Admission Status and other things",
+                DateCreated = DateTime.SpecifyKind(new DateTime(2025, 11, 10), DateTimeKind.Utc),
             };
 
-            modelBuilder.Entity<Role>().HasData(roles);
+            modelBuilder.Entity<Role>().HasData(studentRole);
         }
 
         DbSet<User> Users => Set<User>();
@@ -150,8 +164,8 @@ namespace Mitc_Registration_Portal.Persistence.Context
         DbSet<Department> Departments => Set<Department>();
         DbSet<Passport> Documents => Set<Passport>();
         DbSet<Waec> Waecs => Set<Waec>();
-        DbSet <Payment> Payments => Set<Payment>();
+        DbSet<Payment> Payments => Set<Payment>();
+        DbSet<RegistrationDraft> RegistrationDrafts => Set<RegistrationDraft>();
         DbSet<Admin> Admins => Set<Admin>();
     }
-    
 }
