@@ -45,7 +45,7 @@ Key points:
 - `WebhookController` — Paystack webhook receiver
 - `UserController` — login/logout (cookie auth)
 - `DepartmentController` — department CRUD (minimal)
-- `HomeController` — default template pages
+- `HomeController` — default landing pages
 
 ### `Models/`
 

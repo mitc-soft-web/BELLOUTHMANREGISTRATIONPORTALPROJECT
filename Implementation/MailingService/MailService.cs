@@ -16,7 +16,7 @@ namespace Mitc_Registration_Portal.Implementation.MailingService
         private readonly IRazorEngine _razorEngine = razorEngine ?? throw new ArgumentNullException(nameof(razorEngine));
         private readonly EmailConfiguration _emailConfiguration = options.Value ?? throw new ArgumentException(nameof(options));
         private readonly ILogger<MailService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        public async Task<bool> SendAdmissionStatus(string email, string name, string title, string status)
+        public async Task<bool> SendAdmissionStatus(string email, string name, string title, string status, string? departmentName)
         {
             try
             {
@@ -25,7 +25,8 @@ namespace Mitc_Registration_Portal.Implementation.MailingService
                     Name = name,
                     Email = email,
                     Title = title,
-                    Status = status
+                    Status = status,
+                    DepartmentName = departmentName
 
                 };
                 var mailBody = await _razorEngine.ParseAsync("SendAdmissionStatus", model);

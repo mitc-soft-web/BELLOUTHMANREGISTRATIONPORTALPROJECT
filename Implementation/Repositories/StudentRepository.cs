@@ -21,18 +21,28 @@ namespace Mitc_Registration_Portal.Implementation.Repositories
         {
             return await _studentContext.Set<Student>()
                            .Include(d => d.User)
-                           .Include(d=>d.Passport)
-                          .AsNoTracking()
-                          .FirstOrDefaultAsync(std => std.UserId == studentId);
+                           .Include(d => d.Passport)
+                           .Include(d => d.Department)
+                           .AsNoTracking()
+                           .FirstOrDefaultAsync(std => std.UserId == studentId);
         }
 
         public async Task<Student> GetStudentByStudentId(Guid studentId)
         {
-
             return await _studentContext.Set<Student>()
                            .Include(d => d.Passport)
+                           .Include(d => d.Department)
+                           .Include(d => d.Waec)
                           .AsNoTracking()
                           .FirstOrDefaultAsync(std => std.Id == studentId);
+        }
+
+        public async Task<Student?> GetStudentForAdmissionUpdateAsync(Guid studentId)
+        {
+            return await _studentContext.Set<Student>()
+                .Include(d => d.Department)
+                .Include(d => d.User)
+                .FirstOrDefaultAsync(std => std.Id == studentId);
         }
     }
 }

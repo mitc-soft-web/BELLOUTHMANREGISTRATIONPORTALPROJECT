@@ -1,7 +1,20 @@
-﻿@model Mitc_Registration_Portal.Models.DTOs.Document.DocumentViewModel
+@using Mitc_Registration_Portal.Models.Enums
+@using Mitc_Registration_Portal.Models.DTOs.Waecs
+@model Mitc_Registration_Portal.Models.DTOs.Document.DocumentViewModel
 @{
     ViewData["Title"] = "Student Registration - Step 2";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var gradeOptions = new[] { "A1", "B2", "B3", "C4", "C5", "C6", "D7", "E8", "F9" };
+    var waecSubjects = new[]
+    {
+        "Agricultural Science", "Biology", "Chemistry", "Civic Education", "Commerce",
+        "Computer Studies", "CRK/IRK", "Data Processing", "Economics", "Financial Accounting",
+        "Food and Nutrition", "French", "Further Mathematics", "Geography", "Government",
+        "Hausa", "Igbo", "Literature in English", "Marketing", "Physical Education",
+        "Physics", "Technical Drawing", "Yoruba"
+    }.ToList();
+    waecSubjects.Insert(0, "Mathematics");
+    waecSubjects.Insert(0, "English Language");
 }
 
 <style>
@@ -9,69 +22,41 @@
         box-sizing: border-box;
     }
 
-    .registration-wrapper {
+    .registration-shell {
         min-height: 85vh;
-        padding: 60px 20px;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 48px 18px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #dbe7f5 100%);
     }
 
-    .registration-container {
-        max-width: 900px;
+    .registration-card {
+        max-width: 1020px;
         margin: 0 auto;
         background: #fff;
-        border-radius: 18px;
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        border-radius: 20px;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
         overflow: hidden;
     }
 
-    /* ─── Header ─────────────────────────────────────── */
     .registration-header {
-        background: linear-gradient(135deg, #0066cc 0%, #004080 100%);
+        padding: 42px 38px 32px;
         color: #fff;
-        padding: 44px 40px 36px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
+        background: linear-gradient(135deg, #005bbb 0%, #003b78 100%);
     }
 
-        .registration-header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
+    .registration-header h1 {
+        margin: 0 0 10px;
+        font-size: 2rem;
+        font-weight: 700;
+    }
 
-        .registration-header .school-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.25);
-            border-radius: 30px;
-            padding: 6px 16px;
-            font-size: 0.8em;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
+    .registration-header p {
+        margin: 0;
+        max-width: 680px;
+        line-height: 1.6;
+        opacity: 0.92;
+    }
 
-        .registration-header h1 {
-            font-size: 2em;
-            margin: 0 0 10px;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-        }
-
-        .registration-header p {
-            opacity: 0.88;
-            font-size: 1em;
-            max-width: 500px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-    /* ─── Progress Steps ──────────────────────────────── */
+    /* ─── Progress Steps (3-step) ────────────────────── */
     .progress-steps {
         display: flex;
         justify-content: center;
@@ -86,6 +71,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        position: relative;
         flex: 1;
         max-width: 180px;
     }
@@ -100,9 +86,9 @@
         transition: background 0.4s;
     }
 
-        .step-connector.done {
-            background: #28a745;
-        }
+    .step-connector.done {
+        background: #28a745;
+    }
 
     .step-number {
         width: 44px;
@@ -150,101 +136,160 @@
         font-weight: 600;
     }
 
-    /* ─── Form Body ───────────────────────────────────── */
-    .form-content {
-        padding: 48px 44px;
+    .form-body {
+        padding: 36px 38px 40px;
+    }
+
+    .info-banner,
+    .tips-banner {
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin-bottom: 24px;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    .info-banner {
+        background: #eef6ff;
+        border: 1px solid #c9def8;
+        color: #1d4e89;
+    }
+
+    .tips-banner {
+        background: #fff9e7;
+        border: 1px solid #f5d76e;
+        color: #755700;
     }
 
     .section-title {
-        color: #0066cc;
-        font-size: 1.15em;
-        font-weight: 700;
-        margin-bottom: 22px;
+        margin: 0 0 18px;
         padding-bottom: 12px;
-        border-bottom: 2px solid #eef2f7;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        letter-spacing: -0.01em;
+        border-bottom: 2px solid #eff4fa;
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: #0f172a;
     }
 
-        .section-title .section-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(0, 102, 204, 0.1);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-    .section-spacer {
-        margin-top: 44px;
-    }
-
-    .form-row {
+    .field-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 22px;
+        gap: 18px;
         margin-bottom: 22px;
     }
 
-    .form-group {
+    .field-group {
         display: flex;
         flex-direction: column;
+        gap: 7px;
     }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
+    .field-group label {
+        color: #334155;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
 
-        .form-group label {
-            color: #374151;
-            font-weight: 600;
-            margin-bottom: 7px;
-            font-size: 0.875em;
-            letter-spacing: 0.01em;
-        }
-
-            .form-group label span.req {
-                color: #dc3545;
-                margin-left: 2px;
-            }
+    .field-group .req {
+        color: #dc2626;
+    }
 
     .form-control {
         width: 100%;
-        padding: 11px 14px;
-        border: 1.8px solid #e0e4ea;
-        border-radius: 9px;
-        font-size: 0.97em;
-        transition: border-color 0.25s, box-shadow 0.25s;
-        outline: none;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #d7e0ea;
         background: #fff;
-        color: #1a1a2e;
+        color: #0f172a;
+        font-size: 0.96rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-        .form-control::placeholder {
-            color: #b0b8c4;
-        }
-
-        .form-control:focus {
-            border-color: #0066cc;
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-        }
+    .form-control:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
 
     .text-danger {
-        color: #dc3545;
-        font-size: 0.8em;
-        margin-top: 5px;
-        display: flex;
-        align-items: center;
-        gap: 4px;
+        color: #dc2626;
+        font-size: 0.82rem;
+        margin-top: 4px;
     }
 
-    /* ─── File Upload ─────────────────────────────────── */
-    .file-upload-wrapper {
-        width: 100%;
+    .sitting-panel {
+        padding: 18px;
+        border: 1px solid #d9e6f2;
+        border-radius: 14px;
+        background: #f8fbff;
+        margin-bottom: 22px;
+    }
+
+    .results-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .results-header,
+    .result-row {
+        display: grid;
+        grid-template-columns: 2.1fr 1fr 1fr;
+        gap: 12px;
+        align-items: start;
+    }
+
+    .results-header {
+        padding: 14px 18px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        color: #475569;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .result-row {
+        padding: 14px 18px;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .result-row:last-child {
+        border-bottom: none;
+    }
+
+    .subject-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .row-badge {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, 0.1);
+        color: #1d4ed8;
+        font-size: 0.82rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .results-note {
+        color: #64748b;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 28px;
+    }
+
+    .locked-select {
+        pointer-events: none;
+        background: #f8fafc;
+        color: #64748b;
     }
 
     .file-upload-input {
@@ -259,267 +304,153 @@
     .file-upload-label {
         display: flex;
         align-items: center;
-        gap: 18px;
-        padding: 26px 24px;
+        gap: 16px;
+        padding: 22px 20px;
         border: 2px dashed #d0d7e2;
-        border-radius: 12px;
+        border-radius: 14px;
         background: #f8fafc;
         cursor: pointer;
         transition: all 0.25s;
     }
 
-        .file-upload-label:hover {
-            border-color: #0066cc;
-            background: #eef5ff;
-        }
-
-        .file-upload-label.has-file {
-            border-color: #28a745;
-            background: #f0faf4;
-            border-style: solid;
-        }
-
-    .upload-icon {
-        width: 52px;
-        height: 52px;
-        background: linear-gradient(135deg, #0066cc 0%, #004db3 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
+    .file-upload-label:hover {
+        border-color: #2563eb;
+        background: #eef5ff;
     }
 
-    .file-upload-label.has-file .upload-icon {
-        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+    .file-upload-label.has-file {
+        border-style: solid;
+        border-color: #16a34a;
+        background: #f0fdf4;
+    }
+
+    .upload-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
     .upload-text h4 {
-        color: #374151;
         margin: 0 0 4px;
-        font-size: 0.95em;
-        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.96rem;
+        font-weight: 700;
     }
 
     .upload-text p {
-        color: #9aa5b4;
-        font-size: 0.82em;
         margin: 0;
+        color: #64748b;
+        font-size: 0.84rem;
     }
 
-    .upload-or-badge {
+    .upload-badge {
         margin-left: auto;
-        background: #0066cc;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #2563eb;
         color: #fff;
-        font-size: 0.75em;
+        font-size: 0.77rem;
         font-weight: 700;
-        padding: 5px 12px;
-        border-radius: 20px;
-        letter-spacing: 0.04em;
         white-space: nowrap;
-        flex-shrink: 0;
     }
 
-    .file-upload-label.has-file .upload-or-badge {
-        background: #28a745;
+    .file-upload-label.has-file .upload-badge,
+    .file-upload-label.has-file .upload-icon {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     }
 
-    /* ─── File Preview ────────────────────────────────── */
     .file-preview {
-        margin-top: 12px;
-        padding: 14px 18px;
-        background: #f0faf4;
-        border: 1px solid #c3e6cb;
-        border-radius: 10px;
         display: none;
+        margin-top: 12px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
     }
 
-        .file-preview.show {
-            display: flex;
-        }
-
-    .file-info {
+    .file-preview.show {
         display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
     }
 
-    .file-icon {
-        width: 38px;
-        height: 38px;
-        background: #28a745;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        flex-shrink: 0;
+    .preview-name {
+        font-weight: 700;
     }
 
-    .file-details h5 {
-        margin: 0 0 2px;
-        color: #1a3a25;
-        font-size: 0.88em;
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 300px;
-    }
-
-    .file-details p {
-        margin: 0;
-        color: #5a9e6f;
-        font-size: 0.78em;
+    .preview-size {
+        color: #15803d;
+        font-size: 0.83rem;
     }
 
     .remove-file {
+        border: 1px solid #dc2626;
         background: #fff;
-        color: #dc3545;
-        border: 1.5px solid #dc3545;
-        padding: 7px 16px;
-        border-radius: 7px;
-        cursor: pointer;
-        font-size: 0.82em;
+        color: #dc2626;
+        border-radius: 10px;
+        padding: 8px 14px;
         font-weight: 600;
-        transition: all 0.2s;
-        white-space: nowrap;
-        flex-shrink: 0;
+        cursor: pointer;
     }
 
-        .remove-file:hover {
-            background: #dc3545;
-            color: #fff;
-        }
-
-    /* ─── Alerts ──────────────────────────────────────── */
-    .alert-info {
-        background: #eef5ff;
-        border: 1px solid #c3d9f7;
-        color: #1a4a80;
-        padding: 14px 18px;
-        border-radius: 10px;
-        margin-bottom: 32px;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        font-size: 0.9em;
-        line-height: 1.5;
-    }
-
-        .alert-info svg {
-            flex-shrink: 0;
-            margin-top: 1px;
-            color: #0066cc;
-        }
-
-    .info-box {
-        background: #fffbeb;
-        border: 1px solid #f6d860;
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin-bottom: 22px;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        font-size: 0.88em;
-        line-height: 1.6;
-        color: #7a5c00;
-    }
-
-        .info-box svg {
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .info-box strong {
-            color: #5a4200;
-        }
-
-    /* ─── Actions ─────────────────────────────────────── */
     .form-actions {
+        margin-top: 34px;
+        padding-top: 24px;
+        border-top: 1px solid #e2e8f0;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-top: 44px;
-        padding-top: 28px;
-        border-top: 2px solid #f0f3f7;
+        gap: 12px;
     }
 
     .btn {
-        padding: 13px 30px;
-        border: none;
-        border-radius: 9px;
-        font-size: 0.97em;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.25s;
         display: inline-flex;
         align-items: center;
-        gap: 9px;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 24px;
+        border-radius: 10px;
+        border: none;
         text-decoration: none;
-        letter-spacing: 0.01em;
+        font-weight: 700;
+        cursor: pointer;
     }
 
     .btn-back {
-        background: #f1f3f5;
-        color: #555;
-        border: 1.5px solid #dde1e7;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #d7e0ea;
     }
 
-        .btn-back:hover {
-            background: #e5e9ee;
-            color: #333;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-    .btn-proceed {
-        background: linear-gradient(135deg, #0066cc 0%, #004db3 100%);
+    .btn-submit {
+        background: linear-gradient(135deg, #005bbb 0%, #003b78 100%);
         color: #fff;
-        box-shadow: 0 4px 14px rgba(0, 102, 204, 0.3);
     }
 
-        .btn-proceed:hover {
-            background: linear-gradient(135deg, #0055b3 0%, #003d99 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.4);
-        }
+    .btn-submit.loading .btn-arrow {
+        display: none;
+    }
 
-        .btn-proceed:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
+    .btn-submit .spinner {
+        display: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,0.35);
+        border-top-color: #fff;
+        border-radius: 999px;
+        animation: spin 0.8s linear infinite;
+    }
 
-        .btn-proceed .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: none;
-        }
-
-        .btn-proceed.loading .spinner {
-            display: block;
-        }
-
-        .btn-proceed.loading .btn-arrow {
-            display: none;
-        }
-
-        .btn-proceed.loading .btn-text::after {
-            content: '...';
-        }
+    .btn-submit.loading .spinner {
+        display: inline-block;
+    }
 
     @@keyframes spin {
         to {
@@ -527,22 +458,23 @@
         }
     }
 
-    /* ─── Responsive ──────────────────────────────────── */
+    @@media (max-width: 900px) {
+        .results-header,
+        .result-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
     @@media (max-width: 768px) {
-        .registration-wrapper {
-            padding: 24px 12px;
+        .registration-shell {
+            padding: 24px 10px;
         }
 
-        .registration-header {
-            padding: 32px 20px 28px;
-        }
-
-            .registration-header h1 {
-                font-size: 1.55em;
-            }
-
-        .form-content {
-            padding: 28px 20px;
+        .registration-header,
+        .form-body,
+        .progress-steps {
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         .progress-steps {
@@ -553,56 +485,86 @@
             max-width: 50px;
         }
 
-        .form-row {
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .file-upload-label {
-            flex-wrap: wrap;
-            gap: 14px;
-        }
-
-        .upload-or-badge {
-            margin-left: 0;
-        }
-
         .form-actions {
             flex-direction: column-reverse;
-            gap: 12px;
         }
 
         .btn {
             width: 100%;
-            justify-content: center;
         }
 
-        .file-details h5 {
-            max-width: 160px;
+        .file-upload-label {
+            flex-wrap: wrap;
         }
+
+        .upload-badge {
+            margin-left: 0;
+        }
+    }
+
+    .results-header,
+    .result-row {
+        display: grid;
+        grid-template-columns: 2.1fr 1fr 1fr auto !important;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .btn-add-row {
+        background: #f1f5f9;
+        color: #0f172a;
+        border: 1px dashed #cbd5e1;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 15px;
+        transition: all 0.2s;
+    }
+    .btn-add-row:hover {
+        background: #e2e8f0;
+        border-color: #94a3b8;
+    }
+    .btn-remove-row {
+        background: #fee2e2;
+        color: #ef4444;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2px;
+    }
+    .btn-remove-row:hover {
+        background: #fecaca;
+    }
+
+    .locked-select {
+        background-color: #f8fafc;
+        cursor: not-allowed;
     }
 </style>
 
-<div class="registration-wrapper">
-    <div class="registration-container">
-
+<div class="registration-shell">
+    <div class="registration-card">
         <div class="registration-header">
-            <div class="school-badge">
-                <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0 2 0V6.5a.5.5 0 0 0-.276-.447l-7.513-3.506z" />
-                    <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032z" />
-                </svg>
-                MITC Admissions
-            </div>
             <h1>Student Registration</h1>
-            <p>Upload your academic credentials and passport photograph</p>
+            <p>Enter your O'Level results manually and upload your passport photograph to continue to payment.</p>
         </div>
 
         <div class="progress-steps">
             <div class="step completed">
                 <div class="step-number">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
                     </svg>
                 </div>
                 <div class="step-label">Personal<br>Details</div>
@@ -610,7 +572,7 @@
             <div class="step-connector done"></div>
             <div class="step active">
                 <div class="step-number">2</div>
-                <div class="step-label">Documents</div>
+                <div class="step-label">Results &amp;<br>Documents</div>
             </div>
             <div class="step-connector"></div>
             <div class="step">
@@ -619,148 +581,184 @@
             </div>
         </div>
 
-        <div class="form-content">
-            <div class="alert-info">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                </svg>
-                <span>Upload clear, high-quality scans or photos. Maximum file size is <strong>5MB</strong> per document.</span>
+        <div class="form-body">
+            <div class="info-banner">
+                Enter the examination details for the result you are using, then add each subject and grade one by one. If you are combining two results, switch the sitting type to two sittings and fill both exam numbers and years.
             </div>
 
             <form asp-action="StepTwoRegistration" method="post" enctype="multipart/form-data" id="step2Form">
+                <h3 class="section-title">Examination Details</h3>
 
-                <h3 class="section-title">
-                    <span class="section-icon">
-                        <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
-                            <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
-                        </svg>
-                    </span>
-                    Examination Details (WAEC/NECO)
-                </h3>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label asp-for="waecModel.ExaminationNumber">Examination Number <span class="req">*</span></label>
-                        <input asp-for="waecModel.ExaminationNumber" class="form-control" placeholder="Enter examination number" required />
-                        <span asp-validation-for="waecModel.ExaminationNumber" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="waecModel.ExaminationYear">Examination Year <span class="req">*</span></label>
-                        <input asp-for="waecModel.ExaminationYear" class="form-control" placeholder="e.g. 2023" type="text" maxlength="4" required />
-                        <span asp-validation-for="waecModel.ExaminationYear" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="form-group full-width" style="margin-bottom: 8px;">
-                    <label asp-for="waecModel.WaecCertificate">WAEC/NECO Certificate <span class="req">*</span></label>
-                    <div class="file-upload-wrapper">
-                        <input type="file" asp-for="waecModel.WaecCertificate"
-                               class="file-upload-input" id="waecUpload"
-                               accept=".pdf,.jpg,.jpeg,.png" required />
-                        <label for="waecUpload" class="file-upload-label" id="waecLabel">
-                            <div class="upload-icon">
-                                <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                                    <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                                </svg>
-                            </div>
-                            <div class="upload-text">
-                                <h4>Click to upload WAEC/NECO Certificate</h4>
-                                <p>Supported formats: PDF, JPG, PNG &nbsp;·&nbsp; Max 5MB</p>
-                            </div>
-                            <span class="upload-or-badge">Browse</span>
-                        </label>
-                    </div>
-                    <div class="file-preview" id="waecPreview">
-                        <div class="file-info">
-                            <div class="file-icon">
-                                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
-                                </svg>
-                            </div>
-                            <div class="file-details">
-                                <h5 id="waecFileName">Certificate.pdf</h5>
-                                <p id="waecFileSize">0 KB</p>
-                            </div>
+                <div class="sitting-panel">
+                    <div class="field-grid">
+                        <div class="field-group">
+                            <label asp-for="waecModel.SittingType">Result Type <span class="req">*</span></label>
+                            <select asp-for="waecModel.SittingType" class="form-control" id="sittingType">
+                                <option value="@((byte)ResultSittingType.OneSitting)">One Sitting</option>
+                                <option value="@((byte)ResultSittingType.TwoSittings)">Two Sittings</option>
+                            </select>
+                            <span asp-validation-for="waecModel.SittingType" class="text-danger"></span>
                         </div>
-                        <button type="button" class="remove-file" onclick="removeFile('waec')">✕ Remove</button>
+                        <div class="field-group">
+                            <label asp-for="waecModel.ExaminationBody">First Sitting Exam Body <span class="req">*</span></label>
+                            <select asp-for="waecModel.ExaminationBody" class="form-control" id="firstExamBody" required>
+                                <option value="">Select Exam Body</option>
+                                <option value="WAEC">WAEC</option>
+                                <option value="NECO">NECO</option>
+                                <option value="NABTEB">NABTEB</option>
+                                <option value="GCE">GCE</option>
+                                <option value="JUPEB">JUPEB</option>
+                                <option value="IJMB">IJMB</option>
+                            </select>
+                            <span asp-validation-for="waecModel.ExaminationBody" class="text-danger"></span>
+                        </div>
                     </div>
-                    <span asp-validation-for="waecModel.WaecCertificate" class="text-danger"></span>
+
+                    <div class="field-grid">
+                        <div class="field-group">
+                            <label asp-for="waecModel.ExaminationNumber">First Sitting Examination Number <span class="req">*</span></label>
+                            <input asp-for="waecModel.ExaminationNumber" class="form-control" placeholder="Enter first sitting exam number" required />
+                            <span asp-validation-for="waecModel.ExaminationNumber" class="text-danger"></span>
+                        </div>
+                        <div class="field-group">
+                            <label asp-for="waecModel.ExaminationYear">First Sitting Examination Year <span class="req">*</span></label>
+                            <input asp-for="waecModel.ExaminationYear" class="form-control" placeholder="e.g. 2024" maxlength="4" required />
+                            <span asp-validation-for="waecModel.ExaminationYear" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="field-grid" id="secondSittingFields">
+                        <div class="field-group">
+                            <label asp-for="waecModel.SecondExaminationBody">Second Sitting Exam Body</label>
+                            <select asp-for="waecModel.SecondExaminationBody" class="form-control" id="secondExamBody">
+                                <option value="">Select Exam Body</option>
+                                <option value="WAEC">WAEC</option>
+                                <option value="NECO">NECO</option>
+                                <option value="NABTEB">NABTEB</option>
+                                <option value="GCE">GCE</option>
+                                <option value="JUPEB">JUPEB</option>
+                                <option value="IJMB">IJMB</option>
+                            </select>
+                            <span asp-validation-for="waecModel.SecondExaminationBody" class="text-danger"></span>
+                        </div>
+                        <div class="field-group">
+                            <label asp-for="waecModel.SecondExaminationNumber">Second Sitting Examination Number</label>
+                            <input asp-for="waecModel.SecondExaminationNumber" class="form-control" placeholder="Enter second sitting exam number" />
+                            <span asp-validation-for="waecModel.SecondExaminationNumber" class="text-danger"></span>
+                        </div>
+                        <div class="field-group">
+                            <label asp-for="waecModel.SecondExaminationYear">Second Sitting Examination Year</label>
+                            <input asp-for="waecModel.SecondExaminationYear" class="form-control" placeholder="e.g. 2023" maxlength="4" />
+                            <span asp-validation-for="waecModel.SecondExaminationYear" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="section-spacer">
-                    <h3 class="section-title">
-                        <span class="section-icon">
-                            <svg width="16" height="16" fill="#0066cc" viewBox="0 0 16 16">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="results-card">
+                    <div class="results-header">
+                        <div>Subject</div>
+                        <div>Grade</div>
+                        <div>Sitting</div>
+                        <div style="width: 40px;"></div>
+                    </div>
+
+                    <div id="subjectsContainer">
+                        @{
+                            var existingResults = Model.waecModel.SubjectResults ?? new List<WaecSubjectResultEntryModel>();
+                            if (!existingResults.Any(r => !string.IsNullOrEmpty(r.Subject)))
+                            {
+                                existingResults = new List<WaecSubjectResultEntryModel> { new WaecSubjectResultEntryModel() };
+                            }
+                        }
+                        @for (var i = 0; i < existingResults.Count; i++)
+                        {
+                            <div class="result-row">
+                                <div class="field-group">
+                                    <label>Subject</label>
+                                    <div class="subject-cell">
+                                        <span class="row-badge">@(i + 1)</span>
+                                        <select name="waecModel.SubjectResults[@i].Subject" class="form-control subject-select" data-selected-val="@existingResults[i].Subject" required>
+                                            <option value="">Select subject</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="field-group">
+                                    <label>Grade</label>
+                                    <select name="waecModel.SubjectResults[@i].Grade" class="form-control grade-select" data-selected-val="@existingResults[i].Grade" required>
+                                        <option value="">Select grade</option>
+                                    </select>
+                                </div>
+
+                                <div class="field-group">
+                                    <label>Sitting</label>
+                                    <select name="waecModel.SubjectResults[@i].SittingNumber" class="form-control result-sitting-select" required>
+                                        <option value="1" selected="@(existingResults[i].SittingNumber == 1)">Sitting 1</option>
+                                        <option value="2" selected="@(existingResults[i].SittingNumber == 2)">Sitting 2</option>
+                                    </select>
+                                </div>
+
+                                <button type="button" class="btn-remove-row" onclick="removeRow(this)">✕</button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="dynamic-actions-row">
+                        <button type="button" class="btn-add-row" id="addSubjectBtn">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
+                            Add Subject Row
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-note">
+                    Fill in the subjects and grades. If you are using JUPEB/IJMB, select it as your exam body to see the correct subjects and grade scale (A, B, C, D, E, F).
+                </div>
+
+                <h3 class="section-title">Passport Photograph</h3>
+
+                <div class="tips-banner">
+                    Use a recent passport on a plain white or light blue background. Supported formats are JPG and PNG. Large images will be automatically compressed to save space.
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="passportModel.PassportPhoto">Passport Photograph <span class="req">*</span></label>
+                    <input type="file" asp-for="passportModel.PassportPhoto" class="file-upload-input" id="passportUpload" accept=".jpg,.jpeg,.png" />
+                    <label for="passportUpload" class="file-upload-label" id="passportLabel">
+                        <span class="upload-icon">
+                            <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
-                                <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z" />
+                                <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z" />
                             </svg>
                         </span>
-                        Passport Photograph
-                    </h3>
-                </div>
-
-                <div class="info-box">
-                    <svg width="18" height="18" fill="#856404" viewBox="0 0 16 16">
-                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-                    </svg>
-                    <div>
-                        <strong>Photo Requirements:</strong> White or light blue background · Recent photo (not older than 6 months) · Formal attire · Clear face, no accessories covering face.
-                    </div>
-                </div>
-
-                <div class="form-group full-width" style="margin-bottom: 8px;">
-                    <label asp-for="passportModel.PassportPhoto">Passport Photograph <span class="req">*</span></label>
-                    <div class="file-upload-wrapper">
-                        <input type="file" asp-for="passportModel.PassportPhoto"
-                               class="file-upload-input" id="passportUpload"
-                               accept=".jpg,.jpeg,.png" required />
-                        <label for="passportUpload" class="file-upload-label" id="passportLabel">
-                            <div class="upload-icon">
-                                <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
-                                    <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z" />
-                                </svg>
-                            </div>
-                            <div class="upload-text">
-                                <h4>Click to upload Passport Photo</h4>
-                                <p>Supported formats: JPG, PNG &nbsp;·&nbsp; Max 5MB</p>
-                            </div>
-                            <span class="upload-or-badge">Browse</span>
-                        </label>
-                    </div>
+                        <span class="upload-text">
+                            <h4 id="passportTitle">Click to upload passport photo</h4>
+                            <p>Supported formats: JPG, PNG</p>
+                        </span>
+                        <span class="upload-badge" id="passportBadge">Browse</span>
+                    </label>
                     <div class="file-preview" id="passportPreview">
-                        <div class="file-info">
-                            <div class="file-icon">
-                                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
-                                </svg>
-                            </div>
-                            <div class="file-details">
-                                <h5 id="passportFileName">Passport.jpg</h5>
-                                <p id="passportFileSize">0 KB</p>
-                            </div>
+                        <div>
+                            <div class="preview-name" id="passportFileName">passport.jpg</div>
+                            <div class="preview-size" id="passportFileSize">0 KB</div>
                         </div>
-                        <button type="button" class="remove-file" onclick="removeFile('passport')">✕ Remove</button>
+                        <button type="button" class="remove-file" id="removePassport">Remove</button>
                     </div>
                     <span asp-validation-for="passportModel.PassportPhoto" class="text-danger"></span>
                 </div>
 
                 <div class="form-actions">
-                    <a asp-action="StepOneRegistration" asp-controller="Account" class="btn btn-back">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
-                        </svg>
-                        Back to Step 1
-                    </a>
-                    <button type="submit" class="btn btn-proceed" id="submitBtn">
-                        <span class="btn-text">Proceed to Review</span>
+                    <a asp-action="StepOneRegistration" class="btn btn-back">Back to Step 1</a>
+                    <button type="submit" class="btn btn-submit" id="submitBtn">
+                        <span class="btn-text">Proceed to Payment</span>
                         <svg class="btn-arrow" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                         </svg>
-                        <div class="spinner"></div>
+                        <span class="spinner"></span>
                     </button>
                 </div>
             </form>
@@ -773,72 +771,285 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js" integrity="sha512-MgYeYFj8R3S6rvZyd/7yV88xGZ1Z0yQfEitRZiTewm8rKofGvBvHnB3z5/Oixdya1x1fGexC24Bf1k1z2b0Bpg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script>
-        document.getElementById('waecUpload')?.addEventListener('change', function (e) {
-            handleFileUpload(e, 'waec');
+        const sittingType = document.getElementById('sittingType');
+        const secondSittingFields = document.getElementById('secondSittingFields');
+        const firstExamBody = document.getElementById('firstExamBody');
+        const secondExamBody = document.getElementById('secondExamBody');
+        const subjectsContainer = document.getElementById('subjectsContainer');
+        const addSubjectBtn = document.getElementById('addSubjectBtn');
+        const passportUpload = document.getElementById('passportUpload');
+        const passportLabel = document.getElementById('passportLabel');
+        const passportPreview = document.getElementById('passportPreview');
+        const passportFileName = document.getElementById('passportFileName');
+        const passportFileSize = document.getElementById('passportFileSize');
+        const passportTitle = document.getElementById('passportTitle');
+        const passportBadge = document.getElementById('passportBadge');
+        const removePassport = document.getElementById('removePassport');
+
+        const oLevelSubjects = [
+            "Mathematics", "English Language", "Agricultural Science", "Biology", "Chemistry", "Civic Education", "Commerce",
+            "Computer Studies", "CRK/IRK", "Data Processing", "Economics", "Financial Accounting",
+            "Food and Nutrition", "French", "Further Mathematics", "Geography", "Government",
+            "Hausa", "Igbo", "Literature in English", "Marketing", "Physical Education",
+            "Physics", "Technical Drawing", "Yoruba", "Book Keeping", "Office Practice",
+            "Animal Husbandry", "Fisheries", "Store Management", "Insurance", "Salesmanship",
+            "Dyeing & Bleaching", "Catering Craft Practice", "Garment Making"
+        ];
+        const finalOLevel = ["English Language", "Mathematics", ...oLevelSubjects.filter(s => s !== "Mathematics" && s !== "English Language").sort()];
+
+        const aLevelSubjects = [
+            "Mathematics", "Physics", "Chemistry", "Biology", "Economics", "Government",
+            "Literature in English", "Geography", "Accounting", "Business Studies", "History", "Sociology"
+        ].sort();
+
+        const oLevelGrades = ["A1", "B2", "B3", "C4", "C5", "C6", "D7", "E8", "F9"];
+        const aLevelGrades = ["A", "B", "C", "D", "E", "F"];
+
+        function getExamBodyForSitting(sittingNumber) {
+            if (sittingNumber === 2) {
+                return secondExamBody.value || 'WAEC';
+            }
+            return firstExamBody.value || 'WAEC';
+        }
+
+        function updateDropdownsForRow(row) {
+            const sittingSelect = row.querySelector('.result-sitting-select');
+            const subjectSelect = row.querySelector('.subject-select');
+            const gradeSelect = row.querySelector('.grade-select');
+
+            const sittingVal = parseInt(sittingSelect.value) || 1;
+            const examBody = getExamBodyForSitting(sittingVal);
+            const isALevel = examBody === 'JUPEB' || examBody === 'IJMB';
+
+            const subjects = isALevel ? aLevelSubjects : finalOLevel;
+            const grades = isALevel ? aLevelGrades : oLevelGrades;
+
+            const selectedSubject = subjectSelect.getAttribute('data-selected-val') || subjectSelect.value;
+            const selectedGrade = gradeSelect.getAttribute('data-selected-val') || gradeSelect.value;
+
+            // Clear attribute after first load so users can change them
+            subjectSelect.removeAttribute('data-selected-val');
+            gradeSelect.removeAttribute('data-selected-val');
+
+            subjectSelect.innerHTML = '<option value="">Select subject</option>';
+            subjects.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                if (sub === selectedSubject) opt.selected = true;
+                subjectSelect.appendChild(opt);
+            });
+
+            gradeSelect.innerHTML = '<option value="">Select grade</option>';
+            grades.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                if (g === selectedGrade) opt.selected = true;
+                gradeSelect.appendChild(opt);
+            });
+        }
+
+        function updateAllRowDropdowns() {
+            document.querySelectorAll('.result-row').forEach(row => {
+                updateDropdownsForRow(row);
+            });
+        }
+
+        function reindexRows() {
+            const rows = document.querySelectorAll('.result-row');
+            rows.forEach((row, index) => {
+                const badge = row.querySelector('.row-badge');
+                if (badge) badge.textContent = index + 1;
+
+                const subjectSelect = row.querySelector('.subject-select');
+                if (subjectSelect) {
+                    subjectSelect.name = `waecModel.SubjectResults[${index}].Subject`;
+                }
+
+                const gradeSelect = row.querySelector('.grade-select');
+                if (gradeSelect) {
+                    gradeSelect.name = `waecModel.SubjectResults[${index}].Grade`;
+                }
+
+                const sittingSelect = row.querySelector('.result-sitting-select');
+                if (sittingSelect) {
+                    sittingSelect.name = `waecModel.SubjectResults[${index}].SittingNumber`;
+                }
+            });
+        }
+
+        function removeRow(btn) {
+            const rows = document.querySelectorAll('.result-row');
+            if (rows.length <= 1) {
+                alert('You must enter at least one subject result.');
+                return;
+            }
+            btn.closest('.result-row').remove();
+            reindexRows();
+        }
+
+        function addRow() {
+            const index = document.querySelectorAll('.result-row').length;
+            const newRow = document.createElement('div');
+            newRow.className = 'result-row';
+            newRow.innerHTML = `
+                <div class="field-group">
+                    <label>Subject</label>
+                    <div class="subject-cell">
+                        <span class="row-badge">${index + 1}</span>
+                        <select name="waecModel.SubjectResults[${index}].Subject" class="form-control subject-select" required>
+                            <option value="">Select subject</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label>Grade</label>
+                    <select name="waecModel.SubjectResults[${index}].Grade" class="form-control grade-select" required>
+                        <option value="">Select grade</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Sitting</label>
+                    <select name="waecModel.SubjectResults[${index}].SittingNumber" class="form-control result-sitting-select" required>
+                        <option value="1">Sitting 1</option>
+                        <option value="2">Sitting 2</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-remove-row" onclick="removeRow(this)">✕</button>
+            `;
+            subjectsContainer.appendChild(newRow);
+
+            const sittingSelect = newRow.querySelector('.result-sitting-select');
+            sittingSelect.addEventListener('change', () => {
+                updateDropdownsForRow(newRow);
+            });
+
+            // Adjust sitting select restriction
+            const isTwoSittings = sittingType.value === '@((byte)ResultSittingType.TwoSittings)';
+            if (!isTwoSittings) {
+                sittingSelect.value = '1';
+                sittingSelect.classList.add('locked-select');
+                sittingSelect.style.pointerEvents = 'none';
+            }
+
+            updateDropdownsForRow(newRow);
+            reindexRows();
+        }
+
+        function updateSittingMode() {
+            const isTwoSittings = sittingType.value === '@((byte)ResultSittingType.TwoSittings)';
+            secondSittingFields.style.display = isTwoSittings ? 'grid' : 'none';
+
+            const secondExamBodySelect = document.getElementById('secondExamBody');
+            if (isTwoSittings) {
+                secondExamBodySelect.setAttribute('required', 'required');
+            } else {
+                secondExamBodySelect.removeAttribute('required');
+                secondExamBodySelect.value = '';
+            }
+
+            document.querySelectorAll('.result-sitting-select').forEach(select => {
+                if (!isTwoSittings) {
+                    select.value = '1';
+                    select.classList.add('locked-select');
+                    select.style.pointerEvents = 'none';
+                } else {
+                    select.classList.remove('locked-select');
+                    select.style.pointerEvents = 'auto';
+                }
+                const row = select.closest('.result-row');
+                if (row) updateDropdownsForRow(row);
+            });
+        }
+
+        addSubjectBtn.addEventListener('click', addRow);
+
+        sittingType.addEventListener('change', updateSittingMode);
+        firstExamBody.addEventListener('change', updateAllRowDropdowns);
+        secondExamBody.addEventListener('change', updateAllRowDropdowns);
+
+        // Bind existing row sitting changes
+        document.querySelectorAll('.result-sitting-select').forEach(select => {
+            select.addEventListener('change', function() {
+                updateDropdownsForRow(this.closest('.result-row'));
+            });
         });
 
-        document.getElementById('passportUpload')?.addEventListener('change', function (e) {
-            handleFileUpload(e, 'passport');
+        // Initialize existing rows on load
+        document.querySelectorAll('.result-row').forEach(row => {
+            updateDropdownsForRow(row);
         });
+        updateSittingMode();
 
-        function handleFileUpload(event, type) {
-            const file = event.target.files[0];
-            if (!file) return;
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 KB';
+            const kb = bytes / 1024;
+            if (kb < 1024) return `${kb.toFixed(1)} KB`;
+            return `${(kb / 1024).toFixed(1)} MB`;
+        }
 
-            const maxSize = 5 * 1024 * 1024;
-            if (file.size > maxSize) {
-                alert('File size exceeds 5MB. Please upload a smaller file.');
-                event.target.value = '';
+        function clearPassportFile() {
+            passportUpload.value = '';
+            passportLabel.classList.remove('has-file');
+            passportPreview.classList.remove('show');
+            passportTitle.textContent = 'Click to upload passport photo';
+            passportBadge.textContent = 'Browse';
+        }
+
+        passportUpload?.addEventListener('change', function () {
+            const file = passportUpload.files[0];
+            if (!file) {
+                clearPassportFile();
                 return;
             }
 
-            const label     = document.getElementById(`${type}Label`);
-            const preview   = document.getElementById(`${type}Preview`);
-            const fileName  = document.getElementById(`${type}FileName`);
-            const fileSize  = document.getElementById(`${type}FileSize`);
-            const badge     = label.querySelector('.upload-or-badge');
-            const iconTitle = label.querySelector('.upload-text h4');
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a valid image file (JPG, JPEG, or PNG).');
+                clearPassportFile();
+                return;
+            }
 
-            label.classList.add('has-file');
-            preview.classList.add('show');
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            if (badge) badge.textContent = 'Uploaded ✓';
-            if (iconTitle) iconTitle.textContent = file.name.length > 38
-                ? file.name.substring(0, 38) + '…'
-                : file.name;
-        }
+            passportTitle.textContent = 'Compressing image...';
+            passportBadge.textContent = 'Wait';
 
-        function removeFile(type) {
-            const input     = document.getElementById(`${type}Upload`);
-            const label     = document.getElementById(`${type}Label`);
-            const preview   = document.getElementById(`${type}Preview`);
-            const badge     = label.querySelector('.upload-or-badge');
-            const iconTitle = label.querySelector('.upload-text h4');
-            const origTitle = type === 'waec'
-                ? 'Click to upload WAEC/NECO Certificate'
-                : 'Click to upload Passport Photo';
+            new Compressor(file, {
+                quality: 0.7,
+                maxWidth: 800,
+                maxHeight: 800,
+                success(result) {
+                    const compressedFile = new File([result], file.name, {
+                        type: result.type,
+                        lastModified: Date.now(),
+                    });
 
-            input.value = '';
-            label.classList.remove('has-file');
-            preview.classList.remove('show');
-            if (badge) badge.textContent = 'Browse';
-            if (iconTitle) iconTitle.textContent = origTitle;
-        }
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(compressedFile);
+                    passportUpload.files = dataTransfer.files;
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
-        }
+                    passportLabel.classList.add('has-file');
+                    passportPreview.classList.add('show');
+                    passportFileName.textContent = compressedFile.name;
+                    passportFileSize.textContent = formatFileSize(compressedFile.size);
+                    passportTitle.textContent = compressedFile.name;
+                    passportBadge.textContent = 'Uploaded';
+                },
+                error(err) {
+                    console.error('Compression error:', err.message);
+                    alert('An error occurred while processing the image.');
+                    clearPassportFile();
+                },
+            });
+        });
+
+        removePassport?.addEventListener('click', clearPassportFile);
 
         document.getElementById('step2Form')?.addEventListener('submit', function () {
-            const btn = document.getElementById('submitBtn');
-            btn.classList.add('loading');
-            btn.disabled = true;
+            document.getElementById('submitBtn')?.classList.add('loading');
         });
     </script>
 }

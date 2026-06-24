@@ -522,6 +522,10 @@
                             <span style="color: var(--primary); font-weight: 600;">@Model.Data.RegistrationNumber</span>
                         </li>
                         <li class="details-item">
+                            <strong style="color: #6c757d;">Department</strong>
+                            <span style="color: #1a1a1a; font-weight: 600;">@(Model.Data.DepartmentName ?? "Not assigned")</span>
+                        </li>
+                        <li class="details-item">
                             <strong style="color: #6c757d;">Date Joined</strong>
                             <span style="color: #1a1a1a; font-weight: 600;">@(Model.Data.DateCreated.ToString("MMM dd, yyyy") ?? "N/A")</span>
                         </li>

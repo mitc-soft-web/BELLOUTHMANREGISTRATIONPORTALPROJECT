@@ -3,424 +3,554 @@
 @model BaseResponse<Mitc_Registration_Portal.Models.DTOs.Students.StudentDtos>
 
 <style>
-    @@keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .admission-page {
+        padding: 24px 0;
     }
 
-    @@keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.03);
-        }
-    }
-
-    :root {
-        --primary-color: #0066cc;
-        --primary-dark: #004080;
-        --secondary-bg: #f5f7fa;
-        --text-dark: #1f2937;
-        --text-light: #6b7280;
-        --white: #ffffff;
-        --danger: #dc3545;
-        --success: #28a745;
-        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 25px -3px rgba(0, 102, 204, 0.1);
-        --radius-lg: 1rem;
-    }
-
-    body {
-        background-color: var(--secondary-bg);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .page-container {
-        animation: fadeInUp 0.6s ease-out;
-        padding: 1.5rem 0;
-    }
-
-    .dashboard-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        padding: 2.5rem;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-lg);
-        margin-bottom: 2rem;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-        .dashboard-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: pulse 4s infinite;
-        }
-
-    .header-content {
-        position: relative;
-        z-index: 1;
+    .admission-hero {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 1.5rem;
+        gap: 18px;
+        padding: 28px 30px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #005bbb 0%, #00386f 100%);
+        color: #fff;
+        box-shadow: 0 14px 28px rgba(0, 91, 187, 0.18);
+        margin-bottom: 24px;
     }
 
-    .header-title h1 {
-        font-size: 2rem;
+    .admission-hero h1 {
+        margin: 0 0 8px;
+        font-size: 1.9rem;
         font-weight: 700;
-        margin: 0 0 0.5rem 0;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
     }
 
-    .header-title p {
-        opacity: 0.95;
+    .admission-hero p {
         margin: 0;
-        font-size: 1.05rem;
+        max-width: 620px;
+        line-height: 1.6;
+        opacity: 0.92;
     }
 
-    .back-btn {
+    .hero-link {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.25rem;
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 0.75rem;
-        color: white;
+        justify-content: center;
+        padding: 12px 18px;
+        border-radius: 12px;
         text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        white-space: nowrap;
+        color: #fff;
+        font-weight: 700;
+        border: 1px solid rgba(255,255,255,0.28);
+        background: rgba(255,255,255,0.14);
     }
 
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    .content-grid {
+    .admission-grid {
         display: grid;
-        grid-template-columns: 350px 1fr;
-        gap: 2rem;
+        grid-template-columns: 340px 1fr;
+        gap: 24px;
         align-items: start;
     }
 
-    .card {
-        background: var(--white);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
+    .summary-card,
+    .form-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
         overflow: hidden;
     }
 
-    .card-header {
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #eef2f7;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-    }
-
-    .card-title {
-        margin: 0;
-        font-size: 1.05rem;
+    .card-head {
+        padding: 18px 22px;
+        border-bottom: 1px solid #e9eff5;
+        font-size: 1rem;
         font-weight: 700;
-        color: var(--text-dark);
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
+        color: #0f172a;
     }
 
     .card-body {
-        padding: 1.5rem;
+        padding: 22px;
     }
 
-    .avatar-wrap {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 0.5rem 0 0.25rem;
-    }
-
-    .avatar-img {
-        width: 130px;
-        height: 130px;
-        border-radius: 50%;
+    .student-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 999px;
         object-fit: cover;
-        border: 5px solid rgba(0, 102, 204, 0.15);
-        background: #fff;
+        display: block;
+        margin: 0 auto 18px;
+        border: 5px solid rgba(0, 91, 187, 0.12);
     }
 
-    .meta-list {
+    .student-name {
+        text-align: center;
+        margin: 0 0 4px;
+        color: #0f172a;
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    .student-subtitle {
+        text-align: center;
+        margin: 0 0 20px;
+        color: #64748b;
+    }
+
+    .summary-list {
         list-style: none;
-        margin: 1.25rem 0 0 0;
+        margin: 0;
         padding: 0;
         display: grid;
-        gap: 0.75rem;
+        gap: 12px;
     }
 
-    .meta-item {
+    .summary-list li {
         display: flex;
         justify-content: space-between;
-        gap: 1rem;
-        padding: 0.75rem;
-        border: 1px solid #eef2f7;
-        border-radius: 0.75rem;
-        background: #fbfcfe;
+        gap: 12px;
+        padding: 13px 14px;
+        border: 1px solid #e8edf3;
+        border-radius: 12px;
+        background: #f8fafc;
     }
 
-        .meta-item strong {
-            color: var(--text-light);
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
+    .summary-list strong {
+        color: #64748b;
+        font-size: 0.84rem;
+    }
 
-        .meta-item span {
-            color: var(--text-dark);
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-align: right;
-            word-break: break-word;
-        }
-
-    label {
+    .summary-list span {
+        text-align: right;
         font-weight: 700;
+        color: #0f172a;
+    }
+
+    .status-tip {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: #eef6ff;
+        border: 1px solid #cfe1f9;
+        color: #1e4f8a;
+        line-height: 1.6;
+        font-size: 0.92rem;
+    }
+
+    .form-stack {
+        display: grid;
+        gap: 18px;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .field-group label {
+        color: #334155;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .helper-text {
+        color: #64748b;
         font-size: 0.88rem;
-        color: #374151;
+        line-height: 1.5;
     }
 
     .form-control {
         width: 100%;
-        padding: 0.85rem 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.75rem;
-        font-size: 0.95rem;
-        outline: none;
-        transition: all 0.25s ease;
-        background: white;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #d7e0ea;
+        background: #fff;
+        color: #0f172a;
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.12);
-        }
+    .form-control:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
 
     .text-danger {
-        color: var(--danger) !important;
-        font-size: 0.85rem;
-        font-weight: 600;
+        color: #dc2626;
+        font-size: 0.84rem;
     }
 
     .alert {
-        padding: 1rem 1.25rem;
-        border-radius: 0.75rem;
-        margin-bottom: 1rem;
-        border: 1px solid transparent;
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 16px;
         font-weight: 600;
     }
 
     .alert-danger {
-        background: rgba(220, 53, 69, 0.12);
-        border-color: rgba(220, 53, 69, 0.22);
-        color: #b02a37;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
     }
 
     .alert-success {
-        background: rgba(40, 167, 69, 0.12);
-        border-color: rgba(40, 167, 69, 0.22);
-        color: #1c7c33;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
     }
 
-    .btn-row {
+    .form-actions {
         display: flex;
         justify-content: flex-end;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        padding-top: 1rem;
-        border-top: 1px solid #eef2f7;
-        margin-top: 1.25rem;
+        gap: 12px;
+        margin-top: 10px;
     }
 
-    .btn {
+    .btn-linkish,
+    .btn-primary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.6rem;
-        padding: 0.85rem 1.2rem;
-        border-radius: 0.75rem;
-        border: 2px solid transparent;
+        padding: 12px 18px;
+        border-radius: 12px;
         text-decoration: none;
         font-weight: 700;
+        border: none;
         cursor: pointer;
-        transition: all 0.25s ease;
-        white-space: nowrap;
-        font-size: 0.95rem;
+    }
+
+    .btn-linkish {
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #d7e0ea;
     }
 
     .btn-primary {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
+        background: linear-gradient(135deg, #005bbb 0%, #00386f 100%);
+        color: #fff;
     }
 
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-    .btn-outline {
-        background: white;
-        border-color: #d1d5db;
-        color: var(--text-dark);
-    }
-
-        .btn-outline:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-    @@media (max-width: 1100px) {
-        .content-grid {
+    @@media (max-width: 960px) {
+        .admission-grid {
             grid-template-columns: 1fr;
         }
     }
+
+    @@media (max-width: 768px) {
+        .admission-hero {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-linkish,
+        .btn-primary {
+            width: 100%;
+        }
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 18px;
+        border: none;
+        overflow: hidden;
+    }
+    .modal-header {
+        background: #f8fafc;
+        border-bottom: 1px solid #e9eff5;
+        padding: 18px 24px;
+    }
+    .modal-title {
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .modal-body {
+        padding: 24px;
+    }
+    .waec-section {
+        margin-top: 20px;
+    }
+    .waec-section h4 {
+        margin-bottom: 12px;
+        color: #0f172a;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border-bottom: 2px solid #e9eff5;
+        padding-bottom: 8px;
+    }
+    .waec-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    .waec-table th, .waec-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e9eff5;
+        text-align: left;
+    }
+    .waec-table th {
+        background: #f8fafc;
+        font-weight: 600;
+        color: #64748b;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    .waec-table tr:last-child td {
+        border-bottom: none;
+    }
+    .exam-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+        background: #f8fafc;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid #e9eff5;
+    }
+    .exam-details div strong {
+        display: block;
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+    .exam-details div span {
+        color: #0f172a;
+        font-weight: 600;
+    }
 </style>
 
-<div class="page-container">
-    <div class="dashboard-header">
-        <div class="header-content">
-            <div class="header-title">
-                <h1>
-                    <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Update Admission Status
-                </h1>
-                <p>Change only the student’s admission status (Admitted / Pending / Rejected)</p>
-            </div>
-            <a asp-action="GetStudentById" asp-route-id="@(Model?.Data?.Id)" class="back-btn">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Profile
-            </a>
+<div class="admission-page">
+    <div class="admission-hero">
+        <div>
+            <h1>Update Admission Status</h1>
+            <p>Set the student's admission status and assign the department or course the student should receive with the admission offer.</p>
         </div>
+        <a asp-action="GetStudentById" asp-route-id="@(Model?.Data?.Id)" class="hero-link">Back to Profile</a>
     </div>
 
     @if (TempData["ErrorMessage"] != null)
     {
         <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
     }
+
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success">@TempData["SuccessMessage"]</div>
     }
 
-    <div class="content-grid">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    Student Summary
-                </h2>
-            </div>
+    <div class="admission-grid">
+        <div class="summary-card">
+            <div class="card-head">Student Summary</div>
             <div class="card-body">
-                <div class="avatar-wrap">
-                    <img class="avatar-img"
-                         src="@(string.IsNullOrEmpty(Model?.Data?.PassportUrl) ? "/images/default-avatar.png" : Model.Data.PassportUrl)"
-                         alt="Student Passport" />
-                </div>
+                <img class="student-avatar"
+                     src="@(string.IsNullOrWhiteSpace(Model?.Data?.PassportUrl) ? "/images/default-avatar.png" : Model.Data.PassportUrl)"
+                     alt="Student passport" />
 
-                <ul class="meta-list">
-                    <li class="meta-item">
-                        <strong>Name</strong>
-                        <span>@Model?.Data?.FirstName @Model?.Data?.LastName</span>
-                    </li>
-                    <li class="meta-item">
-                        <strong>Email</strong>
-                        <span>@Model?.Data?.Email</span>
-                    </li>
-                    <li class="meta-item">
-                        <strong>Reg Number</strong>
-                        <span>@Model?.Data?.RegistrationNumber</span>
-                    </li>
-                    <li class="meta-item">
+                <h2 class="student-name">@Model?.Data?.FirstName @Model?.Data?.LastName</h2>
+                <p class="student-subtitle">@Model?.Data?.Email</p>
+
+                <ul class="summary-list">
+                    <li>
                         <strong>Current Status</strong>
                         <span>@Model?.Data?.Status</span>
                     </li>
+                    <li>
+                        <strong>Registration No.</strong>
+                        <span>@Model?.Data?.RegistrationNumber</span>
+                    </li>
+                    <li>
+                        <strong>Current Department</strong>
+                        <span>@(Model?.Data?.DepartmentName ?? "Not assigned")</span>
+                    </li>
                 </ul>
+
+                <div class="status-tip">
+                    When you admit the student, the email notification will include the department selected on this page.
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-                    </svg>
-                    Admission Status
-                </h2>
-            </div>
+        <div class="form-card">
+            <div class="card-head">Admission Decision</div>
             <div class="card-body">
                 <form asp-action="Edit" asp-route-id="@(Model?.Data?.Id)" method="post">
                     @Html.AntiForgeryToken()
-
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                    <div style="display: grid; gap: 0.5rem;">
-                        <label for="Status">New status</label>
-                        <select id="Status" name="Status" class="form-control">
-                            @{
-                                var current = Model?.Data != null ? Convert.ToByte(Model.Data.Status).ToString() : "";
-                                foreach (var item in Html.GetEnumSelectList<Status>())
-                                {
-                                    var selected = item.Value == current ? "selected" : null;
-                                    <option value="@item.Value" selected="@selected">@item.Text</option>
-                                }
+                    @if (Model?.Data != null && (Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected))
+                    {
+                        <div class="alert alert-warning" style="background:#fffbeb; border:1px solid #fef3c7; color:#b45309; margin-bottom: 20px; font-size: 0.95rem;">
+                            <strong>Admission Decision Final:</strong> This applicant's status is set as <strong>@Model.Data.Status</strong>. The admission decision is permanent and cannot be modified.
+                        </div>
+                        <input type="hidden" name="Status" value="@((byte)Model.Data.Status)" />
+                    }
+
+                    <div class="form-stack">
+                        <div class="field-group">
+                            <label for="DepartmentId">Assigned Department / Course</label>
+                            <select id="DepartmentId" name="DepartmentId" class="form-control" asp-items="Model.Data.DepartmentsSelectListItems" 
+                                    disabled="@(Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected ? "disabled" : null)"></select>
+                            <div class="helper-text">Admin can change this before saving, especially when issuing admission.</div>
+                            @if (Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected)
+                            {
+                                <input type="hidden" name="DepartmentId" value="@Model.Data.DepartmentId" />
                             }
-                        </select>
-                        <div style="color: var(--text-light); font-size: 0.9rem; line-height: 1.45;">
-                            This page only updates admission status. Other student fields are read-only.
+                        </div>
+
+                        <div class="field-group">
+                            <label for="Status">Admission Status</label>
+                            <select id="Status" name="Status" class="form-control" 
+                                    disabled="@(Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected ? "disabled" : null)">
+                                @{
+                                    var current = Model?.Data != null ? Convert.ToByte(Model.Data.Status).ToString() : "";
+                                    foreach (var item in Html.GetEnumSelectList<Status>())
+                                    {
+                                        if (item.Value == current)
+                                        {
+                                            <option value="@item.Value" selected>@item.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <div class="helper-text">Choose whether the student should remain pending, be admitted, or be rejected.</div>
                         </div>
                     </div>
 
-                    <div class="btn-row">
-                        <a asp-action="GetStudentById" asp-route-id="@(Model?.Data?.Id)" class="btn btn-outline">Cancel</a>
-                        <button type="submit" class="btn btn-primary">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Update Status
-                        </button>
+                    <div class="form-actions">
+                        <button type="button" class="btn-linkish" data-bs-toggle="modal" data-bs-target="#detailsModal">View Full Details</button>
+                        <a asp-action="GetStudentById" asp-route-id="@(Model?.Data?.Id)" class="btn-linkish">Cancel</a>
+                        @if (Model?.Data != null && Model.Data.Status != Status.Admitted && Model.Data.Status != Status.Rejected)
+                        {
+                            <button type="submit" class="btn-primary">Save Admission Update</button>
+                        }
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Student Full Details & WAEC Results</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center">
+                        <img src="@(string.IsNullOrWhiteSpace(Model?.Data?.PassportUrl) ? "/images/default-avatar.png" : Model.Data.PassportUrl)" 
+                             alt="Student Passport" class="img-fluid rounded shadow-sm" style="max-height: 180px; object-fit: cover;" />
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <small class="text-muted d-block fw-bold">Full Name</small>
+                                <span class="fw-semibold">@Model?.Data?.FirstName @Model?.Data?.MiddleName @Model?.Data?.LastName</span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <small class="text-muted d-block fw-bold">Email</small>
+                                <span class="fw-semibold">@Model?.Data?.Email</span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <small class="text-muted d-block fw-bold">Phone Number</small>
+                                <span class="fw-semibold">@Model?.Data?.PhoneNumber</span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <small class="text-muted d-block fw-bold">NIN</small>
+                                <span class="fw-semibold">@Model?.Data?.NIN</span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <small class="text-muted d-block fw-bold">Gender</small>
+                                <span class="fw-semibold">@Model?.Data?.Gender</span>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <small class="text-muted d-block fw-bold">Date of Birth</small>
+                                <span class="fw-semibold">@(Model?.Data?.DateOfBirth?.ToString("MMM dd, yyyy"))</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model?.Data?.WaecDetails != null)
+                {
+                    <div class="waec-section">
+                        <h4>Examination Results</h4>
+                        <div class="exam-details">
+                            <div>
+                                <strong>Sitting Type</strong>
+                                <span>@Model.Data.WaecDetails.SittingType</span>
+                            </div>
+                            <div>
+                                <strong>First Sitting</strong>
+                                <span>@(Model.Data.WaecDetails.ExaminationBody ?? "WAEC") - @Model.Data.WaecDetails.ExaminationNumber (@Model.Data.WaecDetails.ExaminationYear)</span>
+                            </div>
+                            @if (Model.Data.WaecDetails.SittingType == ResultSittingType.TwoSittings)
+                            {
+                                <div>
+                                    <strong>Second Sitting</strong>
+                                    <span>@(Model.Data.WaecDetails.SecondExaminationBody ?? "WAEC") - @Model.Data.WaecDetails.SecondExaminationNumber (@Model.Data.WaecDetails.SecondExaminationYear)</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="waec-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Subject</th>
+                                        <th>Grade</th>
+                                        <th>Sitting / Body</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Data.WaecDetails.SubjectResults != null && Model.Data.WaecDetails.SubjectResults.Any())
+                                    {
+                                        var count = 1;
+                                        foreach (var result in Model.Data.WaecDetails.SubjectResults)
+                                        {
+                                            <tr>
+                                                <td>@(count++)</td>
+                                                <td class="fw-semibold text-dark">@result.Subject</td>
+                                                <td><span class="badge bg-primary rounded-pill">@result.Grade</span></td>
+                                                <td>
+                                                    Sitting @result.SittingNumber 
+                                                    <span class="text-muted d-block" style="font-size:0.8rem;">
+                                                        (@(result.SittingNumber == 2 ? (Model.Data.WaecDetails.SecondExaminationBody ?? "WAEC") : (Model.Data.WaecDetails.ExaminationBody ?? "WAEC")))
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">No result details found.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning mt-4">
+                        WAEC Results are not available for this student.
+                    </div>
+                }
             </div>
         </div>
     </div>

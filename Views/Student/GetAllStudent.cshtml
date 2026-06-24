@@ -1,9 +1,26 @@
-﻿@using Mitc_Registration_Portal.Models.DTOs
+@using Mitc_Registration_Portal.Models.DTOs
 @using Mitc_Registration_Portal.Models.Enums
 @model BaseResponse<IEnumerable<Mitc_Registration_Portal.Models.DTOs.Students.StudentDtos>>
 @{
     ViewData["Title"] = "Student Directory";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var totalStudents = Model?.Data?.Count() ?? 0;
+    var totalDrafts = ViewBag.TotalDrafts != null ? (int)ViewBag.TotalDrafts : 0;
+    var totalRevenue = ViewBag.TotalRevenue != null ? (decimal)ViewBag.TotalRevenue : 0m;
+    
+    var totalAttempts = totalStudents + totalDrafts;
+    var conversionRate = totalAttempts > 0 ? Math.Round((double)totalStudents / totalAttempts * 100, 1) : 0;
+    var admittedCount = Model?.Data?.Count(s => s.Status == Status.Admitted) ?? 0;
+    var rejectedCount = Model?.Data?.Count(s => s.Status == Status.Rejected) ?? 0;
+    var pendingCount = totalStudents - admittedCount - rejectedCount;
+
+    var totalChartData = admittedCount + pendingCount + rejectedCount;
+    var chartLabels = totalChartData > 0 ? "['Admitted', 'Pending', 'Rejected']" : "['No Data Yet']";
+    var chartData = totalChartData > 0 ? $"[{admittedCount}, {pendingCount}, {rejectedCount}]" : "[1]";
+    var chartColors = totalChartData > 0 ? 
+        "['rgba(34, 197, 94, 0.8)', 'rgba(234, 179, 8, 0.8)', 'rgba(239, 68, 68, 0.8)']" : 
+        "['rgba(200, 200, 200, 0.3)']";
 }
 
 <style>
@@ -586,6 +603,34 @@
             </div>
         </div>
     </div>
+    </div>
+
+    <div class="analytics-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; animation: fadeInUp 0.8s ease-out 0.2s both;">
+        <!-- Revenue Card -->
+        <div class="data-card" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+            <h3 style="margin: 0 0 0.5rem 0; color: #166534; font-size: 1.1rem; font-weight: 600;">Total Revenue Generated</h3>
+            <span style="font-size: 2.5rem; font-weight: 800; color: #15803d;">₦@totalRevenue.ToString("N0")</span>
+            <span style="font-size: 0.9rem; color: #166534; opacity: 0.8; margin-top: 0.5rem;">Via Paystack</span>
+        </div>
+
+        <!-- Conversion Card -->
+        <div class="data-card" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+            <h3 style="margin: 0 0 0.5rem 0; color: #1e40af; font-size: 1.1rem; font-weight: 600;">Registration Conversion</h3>
+            <span style="font-size: 2.5rem; font-weight: 800; color: #1d4ed8;">@conversionRate%</span>
+            <div style="width: 100%; background: rgba(255,255,255,0.5); height: 8px; border-radius: 4px; margin-top: 1rem; overflow: hidden;">
+                <div style="width: @(conversionRate)%; background: #2563eb; height: 100%;"></div>
+            </div>
+            <span style="font-size: 0.85rem; color: #1e40af; margin-top: 0.5rem;">@totalStudents Paid vs @totalAttempts Total Initiated</span>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="data-card" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center;">
+            <h3 style="margin: 0 0 1rem 0; color: var(--text-dark); font-size: 1.1rem; font-weight: 600;">Admissions Overview</h3>
+            <div style="position: relative; height: 160px; width: 100%;">
+                <canvas id="admissionsPieChart"></canvas>
+            </div>
+        </div>
+    </div>
 
     <div class="action-bar">
         <div class="search-filter-group">
@@ -716,7 +761,46 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        (function() {
+            const ctx = document.getElementById('admissionsPieChart');
+            console.log("Pie Chart context:", ctx);
+            if (ctx) {
+                console.log("Chart Data:", @Html.Raw(chartData));
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: @Html.Raw(chartLabels),
+                        datasets: [{
+                            data: @Html.Raw(chartData),
+                            backgroundColor: @Html.Raw(chartColors),
+                            borderColor: [
+                                '#ffffff',
+                                '#ffffff',
+                                '#ffffff'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    usePointStyle: true,
+                                    boxWidth: 8
+                                }
+                            }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            }
+        })();
+
         function searchTable() {
             const input = document.getElementById("searchInput");
             const filter = input.value.toUpperCase();

@@ -1,9 +1,5 @@
-﻿using Mitc_Registration_Portal.Models.DTOs.Departments;
-using Mitc_Registration_Portal.Models.DTOs.Passports;
-using Mitc_Registration_Portal.Models.DTOs.Payments;
-using Mitc_Registration_Portal.Models.DTOs.Users;
-using Mitc_Registration_Portal.Models.DTOs.Waecs;
-using Mitc_Registration_Portal.Models.Entities;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Mitc_Registration_Portal.Models.Enums;
 
 namespace Mitc_Registration_Portal.Models.DTOs.Students
@@ -26,21 +22,16 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students
         public string RegistrationNumber { get; set; }
         public Status Status { get; set; }
         public string? MatricNumber { get; set; }
-
+        public Guid DepartmentId { get; set; }
+        public string? DepartmentName { get; set; }
         public DateTime? ApprovedDate { get; set; }
         public DateTime? RejectedDate { get; set; }
         public string? RejectionReason { get; set; }
-
-        //Navigation properties
-        //public Guid PaymentId { get; set; }
-        //public PaymentDtos Payment { get; set; }
         public Guid PassportId { get; set; }
-        public String PassportUrl { get; set; }
-        //public Guid WaecId { get; set; }
-        //public WaecDtos Waec { get; set; }
-        //public Guid DepartmentId { get; set; }
-        //public DepartmentDtos Department { get; set; }
-        //public Guid UserId { get; set; }
-        //public UserDtos User { get; set; }
+        public string PassportUrl { get; set; }
+        public Mitc_Registration_Portal.Models.DTOs.Waecs.CreateNewWaecModel? WaecDetails { get; set; }
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem>? DepartmentsSelectListItems { get; set; }
     }
 }

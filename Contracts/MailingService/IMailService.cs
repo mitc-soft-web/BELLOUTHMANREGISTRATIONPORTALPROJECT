@@ -2,6 +2,6 @@
 {
     public interface IMailService
     {
-        public Task<bool> SendAdmissionStatus(string email, string name, string title, string status);
+        public Task<bool> SendAdmissionStatus(string email, string name, string title, string status, string? departmentName);
     }
 }

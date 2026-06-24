@@ -162,6 +162,118 @@ namespace Mitc_Registration_Portal.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("Mitc_Registration_Portal.Models.Entities.RegistrationDraft", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CertificatesPath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CurrentPaymentReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdatedUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ExamBody")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ExamNo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ExamYear")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<byte?>("Gender")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NIN")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PassportPath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SecondExamBody")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("WaecResultDetailsJson")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrentPaymentReference")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("RegistrationDrafts");
+                });
+
             modelBuilder.Entity("Mitc_Registration_Portal.Models.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -402,6 +514,9 @@ namespace Mitc_Registration_Portal.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("ExaminationBody")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("ExaminationNumber")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -412,6 +527,12 @@ namespace Mitc_Registration_Portal.Migrations
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("ResultDetailsJson")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SecondExaminationBody")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 

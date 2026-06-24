@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Mitc_Registration_Portal.Models.Enums;
 
@@ -8,7 +8,7 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public Gender? Gender { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
@@ -20,6 +20,7 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students
         public string Email { get; set; }
         public string NIN { get; set; }
         public Guid DepartmentId { get; set; }
+        public string? ReCaptchaToken { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem>? DepartmentsSelectListItems { get; set; }
     }

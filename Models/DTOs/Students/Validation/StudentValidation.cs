@@ -73,8 +73,8 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students.Validation
             RuleFor(x => x.DateOfBirth)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Date of birth is required")
-                .Must(BeAtLeast14).WithMessage("You must be at least 14 years old")
-                .GreaterThan(new DateTime(1900, 1, 1)).WithMessage("Date Of Birth is too far in the past");
+                .Must(dob => dob == null || BeAtLeast16(dob.Value)).WithMessage("You must be at least 16 years old")
+                .Must(dob => dob == null || dob.Value > new DateTime(1900, 1, 1)).WithMessage("Date of birth is too far in the past");
 
             RuleFor(x => x.Gender)
                 .NotEmpty().WithMessage("Gender is required");
@@ -82,13 +82,13 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students.Validation
             RuleFor(x => x.PhoneNumber)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Phone number is required")
-                .Matches("^\\+234[1-9][0-9]{9}$").WithMessage("Phone number must be in +234XXXXXXXXXX format");
+                .Matches("^(\\+234[1-9][0-9]{9}|0[7-9][0-9]{9})$").WithMessage("Phone number must be in +234XXXXXXXXXX or 08XXXXXXXXX format");
 
             RuleFor(x => x.DepartmentId)
                 .NotEmpty().WithMessage("Department is required");
         }
 
-        private static bool BeAtLeast14(DateTime dob)
+        private static bool BeAtLeast16(DateTime dob)
         {
             var today = DateTime.Today;
             if (dob.Date > today) return false;
@@ -96,7 +96,7 @@ namespace Mitc_Registration_Portal.Models.DTOs.Students.Validation
             var age = today.Year - dob.Year;
             if (dob.Date > today.AddYears(-age)) age--;
 
-            return age >= 14;
+            return age >= 16;
         }
     }
 }

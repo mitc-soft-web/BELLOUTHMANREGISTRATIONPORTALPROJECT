@@ -148,10 +148,10 @@ namespace Mitc_Registration_Portal.Persistence.Context
         {
             var studentRole = new Role
             {
-                Id = new Guid("8b4a6f3d-1a1e-4ff3-8b9a-0fd0c3f1a2b3"),
+                Id = new Guid("56789c4e-92e2-41a7-92c2-4292f0df5f26"),
                 Name = "Student",
                 Description = "Can Check Admission Status and other things",
-                DateCreated = DateTime.SpecifyKind(new DateTime(2025, 11, 10), DateTimeKind.Utc),
+                DateCreated = new DateTime(2026, 3, 9, 13, 6, 50, 158, DateTimeKind.Utc).AddTicks(8309),
             };
 
             modelBuilder.Entity<Role>().HasData(studentRole);

@@ -10,7 +10,7 @@ namespace Mitc_Registration_Portal.Models.DTOs.Passports.Validation
                 .Cascade(CascadeMode.Stop)
                 .NotNull().WithMessage("Image is required")
                 .Must(f => f != null && f.Length > 0).WithMessage("Image file is empty")
-                .Must(BeValidSize).WithMessage("Picture must be less than 2mb")
+                .Must(BeValidSize).WithMessage("Picture must be less than 5mb")
                 .Must(BeValidType).WithMessage("Only JPG, JPEG and PNG are allowed")
                 .Must(BeValidExtension).WithMessage("Only .jpg, .jpeg and .png extensions are allowed")
                 .Must(BeValidSignature).WithMessage("Invalid image file");
@@ -18,7 +18,7 @@ namespace Mitc_Registration_Portal.Models.DTOs.Passports.Validation
 
         private bool BeValidSize(IFormFile file)
         {
-            return file != null && file.Length <= 2 * 1024 * 1024;
+            return file != null && file.Length <= 5 * 1024 * 1024;
         }
 
         private bool BeValidType(IFormFile file)

@@ -4,6 +4,7 @@
     var isAdmitted = Model.Status == "Admitted";
     var isRejected = Model.Status == "Rejected";
     var title = isAdmitted ? "Admission Offer" : (isRejected ? "Application Decision Notice" : "Application Update");
+    var departmentName = string.IsNullOrWhiteSpace(Model.DepartmentName) ? "your assigned department" : Model.DepartmentName;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -31,6 +32,15 @@
                 <strong>offered admission</strong> to MITC. Please log in to the student portal
                 to accept your admission offer.
               </p>
+
+              <div style="margin:24px 0; padding:18px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px;">
+                <div style="font-size:13px; color:#475569; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">
+                  Admitted Department
+                </div>
+                <div style="font-size:18px; font-weight:700; color:#1e3a8a;">
+                  @departmentName
+                </div>
+              </div>
             }
             else if (isRejected)
             {

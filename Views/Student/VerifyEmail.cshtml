@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Verify Email";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .auth-wrapper {
+        min-height: calc(100vh - 180px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background: #f8fafc;
+    }
+    .auth-card {
+        background: #fff;
+        max-width: 450px;
+        width: 100%;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+    .auth-icon {
+        width: 64px;
+        height: 64px;
+        background: #eff6ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: #0066cc;
+    }
+    .auth-card h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #0f172a;
+    }
+    .auth-card p {
+        color: #64748b;
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+    .form-control {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: #0066cc;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #0066cc 0%, #004db3 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+    }
+    .alert-danger {
+        background: #fef2f2;
+        color: #991b1b;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #fecaca;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-icon">
+            <svg width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+            </svg>
+        </div>
+        <h2>Verify Your Email</h2>
+        <p>Before you begin the registration process, we need to verify your email address to ensure you receive your admission status updates.</p>
+        
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <form asp-action="SendOTP" method="post">
+            <input type="email" name="email" class="form-control" placeholder="Enter your email address" required />
+            <button type="submit" class="btn-submit">Send Verification Code</button>
+        </form>
+    </div>
+</div>

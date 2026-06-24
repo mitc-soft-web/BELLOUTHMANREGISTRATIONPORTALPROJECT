@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -65,7 +66,9 @@ namespace Mitc_Registration_Portal.Implementation.Services
             // Step Two
             string examNo = Session.GetString("ExamNo");
             string year = Session.GetString("Year");
-            string certificates = Session.GetString("certificates");
+            string examBody = Session.GetString("ExamBody");
+            string secondExamBody = Session.GetString("SecondExamBody");
+            string? waecResultDetailsJson = Session.GetString("WaecResultDetailsJson");
             string passport = Session.GetString("passports");
             string reference = Session.GetString("Reg_PayRef");
 
@@ -131,13 +134,14 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     };
                 }
 
-                if (string.IsNullOrWhiteSpace(certificates))
+                var hasWaecResults = GetCompletedWaecResults(waecResultDetailsJson).Any();
+                if (!hasWaecResults || string.IsNullOrWhiteSpace(examNo) || string.IsNullOrWhiteSpace(year))
                 {
-                    _logger.LogWarning("Certificates path missing in session for email {Email}", email);
+                    _logger.LogWarning("WAEC result details missing in session for email {Email}", email);
                     return new BaseResponse<bool>
                     {
                         Status = false,
-                        Message = "WAEC certificate not uploaded. Complete step two and try again."
+                        Message = "WAEC result details are incomplete. Complete step two and try again."
                     };
                 }
 
@@ -169,6 +173,9 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     {
                         ExaminationNumber = examNo,
                         ExaminationYear = year,
+                        ExaminationBody = examBody,
+                        SecondExaminationBody = secondExamBody,
+                        ResultDetailsJson = waecResultDetailsJson,
                         DateCreated = DateTime.UtcNow,
                     }
                 };
@@ -237,6 +244,32 @@ namespace Mitc_Registration_Portal.Implementation.Services
             }
 
             var draft = await _registrationDraftRepository.GetByEmailAsync(email);
+
+            if (draft != null && !string.IsNullOrWhiteSpace(draft.CurrentPaymentReference))
+            {
+                var existingPayment = await _paymentRepository.GetByReference(draft.CurrentPaymentReference);
+                if (existingPayment != null && existingPayment.PaymentStatus == "Successful")
+                {
+                    // Check if the student hasn't been created yet due to a previous error
+                    var studentExists = await _userRepository.Any(u => u.Email == email);
+                    if (!studentExists)
+                    {
+                        _logger.LogInformation("Found successful payment {Reference} for email {Email} without an account. Retrying account creation.", draft.CurrentPaymentReference, email);
+                        var retryResult = await VerifyPaymentAsync(draft.CurrentPaymentReference);
+                        if (retryResult.Status)
+                        {
+                            return new BaseResponse<PayStackInitDto>
+                            {
+                                Status = true,
+                                Message = "Payment was already successful. Your account has been created. Please log in.",
+                                // We fake the auth URL to be the login page so the UI redirects properly
+                                Data = new PayStackInitDto { AuthorizationUrl = "/User/Login" }
+                            };
+                        }
+                    }
+                }
+            }
+
             if (draft != null && draft.ExpiresAtUtc < DateTime.UtcNow)
             {
                 _registrationDraftRepository.Delete(draft);
@@ -377,15 +410,11 @@ namespace Mitc_Registration_Portal.Implementation.Services
         {
             Session.SetString("ExamNo", waecModel.ExaminationNumber);
             Session.SetString("Year", waecModel.ExaminationYear);
+            Session.SetString("ExamBody", waecModel.ExaminationBody ?? string.Empty);
+            Session.SetString("SecondExamBody", waecModel.SecondExaminationBody ?? string.Empty);
+            Session.SetString("WaecResultDetailsJson", SerializeWaecResultDetails(waecModel));
 
-            string? waecPath = null;
             string? passportPath = null;
-
-            if (waecModel.WaecCertificate != null)
-            {
-                waecPath = await SaveFileToDisk(waecModel.WaecCertificate, "certificates");
-                Session.SetString("certificates", waecPath);
-            }
 
             if (passportModel.PassportPhoto != null)
             {
@@ -402,7 +431,9 @@ namespace Mitc_Registration_Portal.Implementation.Services
 
             draft.ExamNo = waecModel.ExaminationNumber ?? string.Empty;
             draft.ExamYear = waecModel.ExaminationYear ?? string.Empty;
-            if (!string.IsNullOrWhiteSpace(waecPath)) draft.CertificatesPath = waecPath;
+            draft.ExamBody = waecModel.ExaminationBody;
+            draft.SecondExamBody = waecModel.SecondExaminationBody;
+            draft.WaecResultDetailsJson = SerializeWaecResultDetails(waecModel);
             if (!string.IsNullOrWhiteSpace(passportPath)) draft.PassportPath = passportPath;
 
             draft.Status = "Step2";
@@ -439,15 +470,19 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     City = getCustomer.City,
                     DateOfBirth = getCustomer.DateOfBirth,
                     Email = getCustomer.Email,
-                    Gender = getCustomer.Gender,
+                     Gender = getCustomer.Gender,
+                     DepartmentId = getCustomer.DepartmentId,
+                     DepartmentName = getCustomer.Department?.DepartmentName,
                     RejectionReason = getCustomer.RejectionReason,
                     RegistrationNumber = getCustomer.RegistrationNumber,
                     Status = getCustomer.Status,
+                    NIN = getCustomer.NIN,
                     MiddleName = getCustomer.MiddleName,
                     PhoneNumber = getCustomer.PhoneNumber,
                     State = getCustomer.State,
                     ApprovedDate = getCustomer.ApprovedDate,
                     PassportUrl = getCustomer.Passport.PassportUrl,
+                    WaecDetails = ParseWaecDetails(getCustomer.Waec),
                     Id = getCustomer.Id
                 }
             };
@@ -530,7 +565,8 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     DateCreated = s.DateCreated,
                     State = s.State,
                     DateOfBirth = s.DateOfBirth,
-                    Gender = s.Gender
+                    Gender = s.Gender,
+                    Status = s.Status
                 }).ToList()
             };
         }
@@ -565,9 +601,14 @@ namespace Mitc_Registration_Portal.Implementation.Services
                 return new BaseResponse<bool> { Status = false, Message = "Department is missing. Restart registration." };
             }
 
-            if (string.IsNullOrWhiteSpace(draft.PassportPath) || string.IsNullOrWhiteSpace(draft.CertificatesPath))
+            if (string.IsNullOrWhiteSpace(draft.PassportPath))
             {
-                return new BaseResponse<bool> { Status = false, Message = "Documents not uploaded. Complete step two and try again." };
+                return new BaseResponse<bool> { Status = false, Message = "Passport not uploaded. Complete step two and try again." };
+            }
+
+            if (string.IsNullOrWhiteSpace(draft.ExamNo) || string.IsNullOrWhiteSpace(draft.ExamYear) || !GetCompletedWaecResults(draft.WaecResultDetailsJson).Any())
+            {
+                return new BaseResponse<bool> { Status = false, Message = "WAEC result details are incomplete. Complete step two and try again." };
             }
 
             var payment = await _paymentRepository.GetByReference(paymentReference);
@@ -643,6 +684,9 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     {
                         ExaminationNumber = draft.ExamNo,
                         ExaminationYear = draft.ExamYear,
+                        ExaminationBody = draft.ExamBody,
+                        SecondExaminationBody = draft.SecondExamBody,
+                        ResultDetailsJson = draft.WaecResultDetailsJson,
                         DateCreated = DateTime.UtcNow,
                     }
                 };
@@ -748,7 +792,7 @@ namespace Mitc_Registration_Portal.Implementation.Services
 
         public async Task<BaseResponse<bool>> UpdateAdmissionStatus(Guid id, UpdateStudentAdmissionRequestModel model)
         {
-            var getStudent = await _studentRepository.Get<Student>(s => s.Id == id);
+            var getStudent = await _studentRepository.GetStudentForAdmissionUpdateAsync(id);
             if (getStudent == null)
             {
                 _logger.LogError("Student Not Found");
@@ -762,7 +806,32 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     Status = false,
                 };
             }
+
+            // Enforce finality rules
+            if (getStudent.Status == Status.Admitted && model.Status == Status.Rejected)
+            {
+                return new BaseResponse<bool>
+                {
+                    Status = false,
+                    Message = "Cannot change status to Rejected once the applicant has been Admitted."
+                };
+            }
+            if (getStudent.Status == Status.Rejected && model.Status == Status.Admitted)
+            {
+                return new BaseResponse<bool>
+                {
+                    Status = false,
+                    Message = "Cannot change status to Admitted once the applicant has been Rejected."
+                };
+            }
+
             getStudent.Status = model.Status;
+            if (model.DepartmentId != Guid.Empty)
+            {
+                getStudent.DepartmentId = model.DepartmentId;
+                getStudent.Department = await _studentRepository.Get<Department>(department => department.Id == model.DepartmentId);
+            }
+
             if (model.Status == Status.Admitted)
             {
                 getStudent.IsAdmitted = true;
@@ -807,7 +876,8 @@ namespace Mitc_Registration_Portal.Implementation.Services
                         studentEmail,
                         getStudent.FullName(),
                         subject,
-                        getStudent.Status.ToString());
+                        getStudent.Status.ToString(),
+                        getStudent.Department?.DepartmentName);
                 }
                 catch (Exception ex)
                 {
@@ -821,6 +891,86 @@ namespace Mitc_Registration_Portal.Implementation.Services
                 Status = true
             };
 
+        }
+
+        private static IEnumerable<WaecSubjectResultEntryModel> GetCompletedWaecResults(string? resultDetailsJson)
+        {
+            if (string.IsNullOrWhiteSpace(resultDetailsJson))
+            {
+                return [];
+            }
+
+            try
+            {
+                var details = JsonSerializer.Deserialize<WaecResultDetailsModel>(resultDetailsJson);
+                return details?.SubjectResults?
+                    .Where(result => !string.IsNullOrWhiteSpace(result.Subject) || !string.IsNullOrWhiteSpace(result.Grade))
+                    .ToList() ?? [];
+            }
+            catch
+            {
+                return [];
+            }
+        }
+
+        private static string SerializeWaecResultDetails(CreateNewWaecModel waecModel)
+        {
+            var details = new WaecResultDetailsModel
+            {
+                SittingType = waecModel.SittingType,
+                ExaminationBody = waecModel.ExaminationBody?.Trim(),
+                SecondExaminationBody = waecModel.SittingType == ResultSittingType.TwoSittings ? waecModel.SecondExaminationBody?.Trim() : null,
+                SecondExaminationYear = waecModel.SittingType == ResultSittingType.TwoSittings ? waecModel.SecondExaminationYear?.Trim() : null,
+                SecondExaminationNumber = waecModel.SittingType == ResultSittingType.TwoSittings ? waecModel.SecondExaminationNumber?.Trim() : null,
+                SubjectResults = (waecModel.SubjectResults ?? [])
+                    .Where(result => !string.IsNullOrWhiteSpace(result.Subject) || !string.IsNullOrWhiteSpace(result.Grade))
+                    .Select(result => new WaecSubjectResultEntryModel
+                    {
+                        Subject = result.Subject?.Trim(),
+                        Grade = result.Grade?.Trim()?.ToUpperInvariant(),
+                        SittingNumber = waecModel.SittingType == ResultSittingType.OneSitting ? 1 : result.SittingNumber
+                    })
+                    .ToList()
+            };
+
+            return JsonSerializer.Serialize(details);
+        }
+
+        private static Mitc_Registration_Portal.Models.DTOs.Waecs.CreateNewWaecModel? ParseWaecDetails(Mitc_Registration_Portal.Models.Entities.Waec? waec)
+        {
+            if (waec == null) return null;
+
+            var waecDetails = new Mitc_Registration_Portal.Models.DTOs.Waecs.CreateNewWaecModel
+            {
+                ExaminationNumber = waec.ExaminationNumber ?? string.Empty,
+                ExaminationYear = waec.ExaminationYear ?? string.Empty,
+                ExaminationBody = waec.ExaminationBody,
+                SecondExaminationBody = waec.SecondExaminationBody,
+                SubjectResults = []
+            };
+
+            if (!string.IsNullOrWhiteSpace(waec.ResultDetailsJson))
+            {
+                try
+                {
+                    var details = JsonSerializer.Deserialize<Mitc_Registration_Portal.Models.DTOs.Waecs.WaecResultDetailsModel>(waec.ResultDetailsJson);
+                    if (details != null)
+                    {
+                        waecDetails.SittingType = details.SittingType;
+                        waecDetails.ExaminationBody ??= details.ExaminationBody;
+                        waecDetails.SecondExaminationBody ??= details.SecondExaminationBody;
+                        waecDetails.SecondExaminationNumber = details.SecondExaminationNumber;
+                        waecDetails.SecondExaminationYear = details.SecondExaminationYear;
+                        waecDetails.SubjectResults = details.SubjectResults ?? [];
+                    }
+                }
+                catch
+                {
+                    // Ignore deserialization errors
+                }
+            }
+
+            return waecDetails;
         }
     }
 }

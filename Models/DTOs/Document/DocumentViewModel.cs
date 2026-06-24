@@ -5,7 +5,7 @@ namespace Mitc_Registration_Portal.Models.DTOs.Document
 {
     public class DocumentViewModel
     {
-        public CreateNewWaecModel waecModel { get; set; }
-        public CreatePassportRequestModel passportModel { get; set; }
+        public CreateNewWaecModel waecModel { get; set; } = new();
+        public CreatePassportRequestModel passportModel { get; set; } = new();
     }
 }

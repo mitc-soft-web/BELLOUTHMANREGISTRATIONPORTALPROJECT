@@ -1,5 +1,5 @@
-﻿using Mitc_Registration_Portal.Models.DTOs.Students;
-using Mitc_Registration_Portal.Models.Entities;
+using Mitc_Registration_Portal.Models.DTOs.Students;
+using Mitc_Registration_Portal.Models.Enums;
 
 namespace Mitc_Registration_Portal.Models.DTOs.Waecs
 {
@@ -9,7 +9,12 @@ namespace Mitc_Registration_Portal.Models.DTOs.Waecs
         public StudentDtos Student { get; set; }
         public string ExaminationYear { get; set; }
         public string ExaminationNumber { get; set; }
-        public IFormFile WaecCertificate { get; set; }
+        public string? ExaminationBody { get; set; }
+        public string? SecondExaminationBody { get; set; }
+        public ResultSittingType SittingType { get; set; } = ResultSittingType.OneSitting;
+        public string? SecondExaminationYear { get; set; }
+        public string? SecondExaminationNumber { get; set; }
+        public string? ResultDetailsJson { get; set; }
         public Guid Id { get; set; }
         public DateTime DateCreated { get; set; }
     }

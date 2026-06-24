@@ -1,4 +1,6 @@
 using FluentValidation;
+using Mitc_Registration_Portal.Models.DTOs.Waecs;
+using Mitc_Registration_Portal.Models.Enums;
 
 namespace Mitc_Registration_Portal.Models.DTOs.Waecs.Validation
 {
@@ -6,25 +8,56 @@ namespace Mitc_Registration_Portal.Models.DTOs.Waecs.Validation
     {
         public CreateWaecValidation()
         {
-            RuleFor(x => x.WaecCertificate)
-                .Cascade(CascadeMode.Stop)
-                .NotNull().WithMessage("Certificate is required")
-                .Must(f => f != null && f.Length > 0).WithMessage("Certificate file is empty")
-                .Must(BeValidSize).WithMessage("Picture must be less than 2mb")
-                .Must(BeValidType).WithMessage("Only JPG, JPEG and PNG are allowed")
-                .Must(BeValidExtension).WithMessage("Only .jpg, .jpeg and .png extensions are allowed")
-                .Must(BeValidSignature).WithMessage("Invalid image file");
-
             RuleFor(x => x.ExaminationYear)
                 .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithMessage("Examination Year is required")
-                .Matches("^[0-9]{4}$").WithMessage("Examination Year must be a valid year")
-                .Must(BeNotInFuture).WithMessage("Examination Year cannot be greater than the current year");
+                .NotEmpty().WithMessage("First sitting examination year is required.")
+                .Matches("^[0-9]{4}$").WithMessage("Examination year must be a valid year.")
+                .Must(BeNotInFuture).WithMessage("Examination year cannot be greater than the current year.");
 
             RuleFor(x => x.ExaminationNumber)
                 .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithMessage("Examination Number is required")
-                .MaximumLength(30).WithMessage("Examination Number is too long");
+                .NotEmpty().WithMessage("First sitting examination number is required.")
+                .MaximumLength(30).WithMessage("Examination number is too long.");
+
+            RuleFor(x => x.ExaminationBody)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("First sitting examination body is required.")
+                .Must(body => body != null && new[] { "WAEC", "NECO", "NABTEB", "GCE", "JUPEB", "IJMB" }.Contains(body.ToUpperInvariant()))
+                .WithMessage("Select a valid examination body.");
+
+            RuleFor(x => x.SittingType)
+                .IsInEnum().WithMessage("Select whether the result is one sitting or two sittings.");
+
+            When(x => x.SittingType == ResultSittingType.TwoSittings, () =>
+            {
+                RuleFor(x => x.SecondExaminationYear)
+                    .Cascade(CascadeMode.Stop)
+                    .NotEmpty().WithMessage("Second sitting examination year is required.")
+                    .Matches("^[0-9]{4}$").WithMessage("Second sitting examination year must be a valid year.")
+                    .Must(year => year != null && BeNotInFuture(year)).WithMessage("Second sitting examination year cannot be greater than the current year.");
+
+                RuleFor(x => x.SecondExaminationNumber)
+                    .Cascade(CascadeMode.Stop)
+                    .NotEmpty().WithMessage("Second sitting examination number is required.")
+                    .MaximumLength(30).WithMessage("Second sitting examination number is too long.");
+
+                RuleFor(x => x.SecondExaminationBody)
+                    .Cascade(CascadeMode.Stop)
+                    .NotEmpty().WithMessage("Second sitting examination body is required.")
+                    .Must(body => body != null && new[] { "WAEC", "NECO", "NABTEB", "GCE", "JUPEB", "IJMB" }.Contains(body.ToUpperInvariant()))
+                    .WithMessage("Select a valid examination body for the second sitting.");
+            });
+
+            RuleFor(x => x.SubjectResults)
+                .NotNull().WithMessage("Enter the WAEC or NECO subjects and grades.")
+                .Must(HaveAtLeastOneCompletedResult).WithMessage("Enter at least one subject result.");
+
+            RuleForEach(x => x.SubjectResults)
+                .SetValidator(new WaecSubjectResultEntryValidation());
+
+            RuleFor(x => x)
+                .Must(HaveValidSittingAssignments)
+                .WithMessage("Each entered subject result must match the selected sitting option.");
         }
 
         private static bool BeNotInFuture(string year)
@@ -34,50 +67,33 @@ namespace Mitc_Registration_Portal.Models.DTOs.Waecs.Validation
             return y >= 1950 && y <= currentYear;
         }
 
-        private static bool BeValidSize(IFormFile file)
+        private static bool HaveAtLeastOneCompletedResult(List<WaecSubjectResultEntryModel>? results)
         {
-            return file != null && file.Length <= 2 * 1024 * 1024;
+            return results != null && results.Any(IsCompletedResult);
         }
 
-        private static bool BeValidType(IFormFile file)
+        private static bool HaveValidSittingAssignments(CreateNewWaecModel model)
         {
-            if (file == null) return false;
-            var allowed = new[] { "image/jpeg", "image/jpg", "image/png" };
-            return allowed.Contains(file.ContentType);
-        }
+            var completedResults = (model.SubjectResults ?? [])
+                .Where(IsCompletedResult)
+                .ToList();
 
-        private static bool BeValidExtension(IFormFile file)
-        {
-            if (file == null) return false;
-            var ext = Path.GetExtension(file.FileName)?.ToLowerInvariant();
-            return ext is ".jpg" or ".jpeg" or ".png";
-        }
-
-        private static bool BeValidSignature(IFormFile file)
-        {
-            if (file == null) return false;
-            try
+            if (!completedResults.Any())
             {
-                using var stream = file.OpenReadStream();
-                Span<byte> header = stackalloc byte[8];
-                var read = stream.Read(header);
-                if (read < 3) return false;
-
-                // JPEG: FF D8 FF
-                if (header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF) return true;
-
-                // PNG: 89 50 4E 47 0D 0A 1A 0A
-                if (read >= 8 &&
-                    header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47 &&
-                    header[4] == 0x0D && header[5] == 0x0A && header[6] == 0x1A && header[7] == 0x0A) return true;
-
-                return false;
+                return true;
             }
-            catch
+
+            return model.SittingType switch
             {
-                return false;
-            }
+                ResultSittingType.OneSitting => completedResults.All(result => result.SittingNumber == 1),
+                ResultSittingType.TwoSittings => completedResults.All(result => result.SittingNumber is 1 or 2),
+                _ => false,
+            };
+        }
+
+        private static bool IsCompletedResult(WaecSubjectResultEntryModel result)
+        {
+            return !string.IsNullOrWhiteSpace(result.Subject) || !string.IsNullOrWhiteSpace(result.Grade);
         }
     }
 }
-
