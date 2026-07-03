@@ -393,7 +393,7 @@
                     <div class="form-stack">
                         <div class="field-group">
                             <label for="DepartmentId">Assigned Department / Course</label>
-                            <select id="DepartmentId" name="DepartmentId" class="form-control" asp-items="Model.Data.DepartmentsSelectListItems" 
+                            <select id="DepartmentId" name="DepartmentId" class="form-select" asp-items="Model.Data.DepartmentsSelectListItems" 
                                     disabled="@(Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected ? "disabled" : null)"></select>
                             <div class="helper-text">Admin can change this before saving, especially when issuing admission.</div>
                             @if (Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected)
@@ -404,12 +404,17 @@
 
                         <div class="field-group">
                             <label for="Status">Admission Status</label>
-                            <select id="Status" name="Status" class="form-control" 
+                            <select id="Status" name="Status" class="form-select" 
                                     disabled="@(Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected ? "disabled" : null)">
                                 @{
                                     var current = Model?.Data != null ? Convert.ToByte(Model.Data.Status).ToString() : "";
+                                    var pendingValue = Convert.ToByte(Status.Pending).ToString();
                                     foreach (var item in Html.GetEnumSelectList<Status>())
                                     {
+                                        if (item.Value == pendingValue)
+                                        {
+                                            continue; // Exclude Pending option
+                                        }
                                         if (item.Value == current)
                                         {
                                             <option value="@item.Value" selected>@item.Text</option>
@@ -421,17 +426,17 @@
                                     }
                                 }
                             </select>
-                            <div class="helper-text">Choose whether the student should remain pending, be admitted, or be rejected.</div>
+                            <div class="helper-text">Choose whether the student should be admitted or rejected.</div>
                         </div>
                     </div>
 
                     <div class="form-actions">
                         <button type="button" class="btn-linkish" data-bs-toggle="modal" data-bs-target="#detailsModal">View Full Details</button>
                         <a asp-action="GetStudentById" asp-route-id="@(Model?.Data?.Id)" class="btn-linkish">Cancel</a>
-                        @if (Model?.Data != null && Model.Data.Status != Status.Admitted && Model.Data.Status != Status.Rejected)
-                        {
-                            <button type="submit" class="btn-primary">Save Admission Update</button>
-                        }
+                        <button type="submit" class="btn-primary" 
+                                disabled="@(Model?.Data?.Status == Status.Admitted || Model?.Data?.Status == Status.Rejected ? "disabled" : null)">
+                            Save Admission Update
+                        </button>
                     </div>
                 </form>
             </div>

@@ -7,8 +7,8 @@ namespace Mitc_Registration_Portal.Models.Entities
     {
    
         public bool IsAdmitted { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
+        public string? City { get; set; }
+        public required string State { get; set; }
         public string MiddleName { get; set; }
         public string Email { get; set; }
         public string NIN { get; set; }

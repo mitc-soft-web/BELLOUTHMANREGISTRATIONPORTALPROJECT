@@ -1,4 +1,4 @@
-﻿@model Mitc_Registration_Portal.Messaging.Models.SendAdmissionUpdate
+@model Mitc_Registration_Portal.Messaging.Models.SendAdmissionUpdate
 @{
     Layout = null;
     var isAdmitted = Model.Status == "Admitted";
@@ -6,6 +6,8 @@
     var title = isAdmitted ? "Admission Offer" : (isRejected ? "Application Decision Notice" : "Application Update");
     var departmentName = string.IsNullOrWhiteSpace(Model.DepartmentName) ? "your assigned department" : Model.DepartmentName;
 }
+<!DOCTYPE html>
+<html lang="en">
 <!DOCTYPE html>
 <html lang="en">
 <body style="margin:0; background:#f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
@@ -16,7 +18,7 @@
 
         <tr>
           <td style="padding:32px 30px 24px; background:#0066cc; border-radius:12px 12px 0 0; text-align:center;">
-            <img src="cid:mitc_logo.png" style="height:50px; margin-bottom:10px;" />
+            <img src="https://tensest-tawna-instructedly.ngrok-free.dev/assets/mitc_logo.png" style="height:50px; margin-bottom:10px;" alt="MITC Logo" />
             <div style="font-size:22px; font-weight:700; color:#ffffff; letter-spacing:-0.025em;">@title</div>
           </td>
         </tr>
