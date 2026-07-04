@@ -1,137 +1,115 @@
 # MITC Registration Portal
 
-An ASP.NET Core MVC web app for managing student registration, document uploads, Paystack payment, and admission-status updates via email.
+[![.NET 9](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![MySQL](https://img.shields.io/badge/Database-MySQL-orange.svg)](https://www.mysql.com/)
+[![Paystack](https://img.shields.io/badge/Payments-Paystack-teal.svg)](https://paystack.com/)
+[![Brevo](https://img.shields.io/badge/Emails-Brevo-darkblue.svg)](https://www.brevo.com/)
 
-## What this project does
+An enterprise-ready, multi-step ASP.NET Core MVC web application designed for student registration, certificate/passport document upload, Paystack secure payment integration, and transactional email-based admission workflows.
 
-- Student registration in multiple steps (personal details -> document upload -> payment).
-- Admin views to list students, view details, delete records, and export student directory to Excel.
-- Paystack payment initialization + verification callback, plus an optional Paystack webhook receiver for asynchronous payment events.
-- Email notifications (Brevo/Sendinblue API) using Razor views as email templates.
+---
 
-## Tech stack
+## 🚀 Key Features & Dynamic Capabilities
 
-- Runtime/framework: .NET `net9.0` (ASP.NET Core MVC)
-- Database: MySQL via `Pomelo.EntityFrameworkCore.MySql`
-- ORM: Entity Framework Core (migrations included)
-- Auth: ASP.NET Core Identity (custom `UserStore` / `RoleStore`) + Cookie auth
-- Validation: FluentValidation (+ client-side adapters)
-- Payments: Paystack REST API (initialize/verify) + webhook signature verification
-- Email: Brevo transactional email API (attachments used for inline assets)
-- UI: Razor views + Bootstrap (static `wwwroot/lib`)
+### 1. Unified Multi-Step Student Registration
+*   **Step 1: Personal & Account Setup** – Collects applicant information (validating **minimum age of 16 years**) and securely initializes credentials.
+*   **Step 2: Certificate & Document Upload** – Facilitates passport photographs and exam certificate uploads.
+*   **Step 3: Paystack Secure Checkout** – Automated payment generation, redirect, and synchronous validation/asynchronous webhooks.
 
-## Quick start (local development)
+### 2. Multi-Sitting Examination & Subject Management
+*   **Support for Multiple Exam Bodies** – Full integration for **WAEC**, **NECO**, **NABTEB**, **GCE**, **JUPEB**, and **IJMB**.
+*   **Dynamic Result Entry UI** – Interactive form allowing applicants to dynamically add, edit, and remove subject sittings.
+*   **Contextual Filtering** – Dynamically adjusts grading systems (e.g., standard A1–F9 for O'Level vs. A–F for A'Level JUPEB/IJMB) based on the chosen exam body.
 
-### 1) Prerequisites
+### 3. Strict Admin Dashboard & Admission Finality
+*   **Admission Status Transitions** – Enforces strict business rules preventing an `Admitted` student from being changed to `Rejected` (and vice versa) once a final decision is made.
+*   **Inline Department Assignment** – Allows administrators to reassess and change the assigned department/course directly in the admin dashboard before confirming admission status.
+*   **Optimized UI Controls** – Switched to Bootstrap 5 `form-select` inputs for dropdown navigation and styled action states.
 
-- .NET 9 SDK installed
-- A MySQL server you can connect to (local or remote)
+### 4. Professional Transactional Notifications
+*   **Razor-Engine Email Templates** – Rendered dynamically using actual view files for rich HTML styling.
+*   **Hosted Asset Embedding** – High-performance inline logos directly served from the portal's public assets (`/assets/mitc_logo.png`) preventing blocking or showing as file attachments in popular email clients.
 
-### 2) Configure secrets (recommended)
+---
 
-This repo currently contains sensitive values in `appsettings.json`. For local development and deployments, prefer environment variables or user-secrets instead of committing real keys.
+## 🛠️ Technology Stack
 
-Minimum config values used by the app:
+*   **Runtime & Framework:** .NET `net9.0` (ASP.NET Core MVC)
+*   **Database:** MySQL Server via `Pomelo.EntityFrameworkCore.MySql`
+*   **Object-Relational Mapper:** Entity Framework Core
+*   **Identity System:** ASP.NET Core Identity (custom customized `UserStore` and `RoleStore` mappings)
+*   **Validation Layer:** FluentValidation
+*   **Payment Gateway:** Paystack REST API & HMAC-SHA512 Webhook signature validation
+*   **Email Client:** Brevo Transactional Email Service
 
-- `ConnectionStrings:MITCContext`
-- `Paystack:SecretKey`
-- `Paystack:CallbackUrl`
-- `MITCAPIs:BrevoApiKey`
-- `EmailConfiguration:FromEmail`
-- `EmailConfiguration:FromName`
+---
 
-See `docs/CONFIGURATION.md` for exact keys and examples.
+## 💻 Quick Start & Local Setup
 
-### 3) Run the app
+### 1. Prerequisites
+*   [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+*   MySQL Server (v8.0+)
+*   Git CLI
 
+### 2. Configuration Setup
+Create or edit your local `appsettings.json` (note: `appsettings.json` is ignored from git tracking for security). The minimum key-value structure required is:
+
+```json
+{
+  "ConnectionStrings": {
+    "MITCContext": "server=localhost;port=3306;database=mitc_db;user=root;password=your_password"
+  },
+  "Paystack": {
+    "SecretKey": "sk_test_...",
+    "CallbackUrl": "https://your-domain.com/Payment/Callback"
+  },
+  "MITCAPIs": {
+    "BrevoApiKey": "xkeysib-..."
+  },
+  "EmailConfiguration": {
+    "FromEmail": "admissions@mitc.edu",
+    "FromName": "MITC Admissions"
+  }
+}
+```
+
+### 3. Restore & Run
+Initialize dependencies and start the local development server:
 ```powershell
 dotnet restore
 dotnet run
 ```
+The application will listen on:
+*   **HTTP:** `http://localhost:5210`
+*   **HTTPS:** `https://localhost:7188`
 
-By default, `Properties/launchSettings.json` defines:
+*Note: Database migrations are automatically checked and applied at application startup in local development.*
 
-- HTTP: `http://localhost:5210`
-- HTTPS: `https://localhost:7188`
+---
 
-In Development, the app auto-applies EF Core migrations on startup (see `Program.cs`).
+## 📂 Project Structure
 
-## Project structure (touches every folder)
+```
+├── Configuration/       # Application configuration POCO bindings
+├── Contracts/           # Cross-cutting entity, repository, and service interfaces
+├── Controllers/         # MVC Controllers & API Endpoints
+├── Exceptions/          # Custom Domain-specific Exceptions
+├── Extensions/          # Utility classes & Asset registries
+├── Filters/             # Action filters (e.g. Registration step guard)
+├── Identity/            # Custom ASP.NET Core Identity stores & password hashing
+├── Implementation/      # Concrete Business Logic (Services & Repositories)
+├── Interface/           # Main business contract interfaces
+├── Messaging/           # Email Service & Brevo sender integrations
+├── Migrations/          # Entity Framework database migrations
+├── Models/              # Domain entities, DTOs, Enums, and Request models
+├── Persistence/         # EF Core DbContext & Database context registration
+├── Properties/          # Launch configurations (launchSettings.json)
+├── Views/               # Razor pages (Main Web Interface & HTML Email Templates)
+└── wwwroot/             # Client-side CSS, JavaScript, Images, and File Uploads
+```
 
-High-level layered layout (MVC + services + repositories + EF Core):
+---
 
-- `Configuration/` - configuration POCOs (e.g., `EmailConfiguration`)
-- `Contracts/` - cross-layer contracts (base entities, service contracts, messaging contracts)
-- `Controllers/` - MVC controllers and HTTP endpoints
-- `Exceptions/` - domain-specific exceptions (mail sender, razor engine)
-- `Extensions/` - helper registries/utilities (e.g., email inline asset mapping)
-- `Filters/` - MVC filters (registration step guard)
-- `Identity/` - custom ASP.NET Core Identity stores + identity helpers
-- `Implementation/` - concrete implementations for services, repositories, and template engine
-- `Interface/` - interfaces for repositories/services/template engine
-- `Messaging/` - messaging implementations (Brevo mail sender) + email models
-- `Migrations/` - EF Core migrations + model snapshot
-- `Models/` - entities, DTOs, validation, enums, and view models
-- `Persistence/` - EF Core `DbContext` and persistence wiring
-- `Properties/` - dev launch profiles (`launchSettings.json`)
-- `Views/` - Razor views (UI + email template view)
-- `wwwroot/` - static assets (Bootstrap, JS/CSS, email assets, uploaded files)
+## 🛡️ License
 
-Generated/tooling folders you may see locally:
-
-- `.dotnet_cli_home/` - local .NET CLI state (environment-dependent)
-- `.vs/` - Visual Studio workspace settings
-- `bin/`, `obj/` - build outputs and intermediate artifacts
-
-## Core user flows
-
-### Student registration (3 steps)
-
-1) Step 1 - Personal + account details
-   - Controller: `StudentController.StepOneRegistration`
-   - Service: `StudentService.StepOneRegistration`
-   - Persists both Session state and a DB-backed draft (`RegistrationDraft`) for resilience.
-
-2) Step 2 - Document upload (WAEC certificate + passport photo)
-   - Controller: `StudentController.StepTwoRegistration`
-   - Service: `StudentService.StepTwoRegistration`
-   - Saves files under `wwwroot/uploads/{certificates|passports}` and updates the `RegistrationDraft`.
-
-3) Step 3 - Payment (Paystack)
-   - Controller: `PaymentController.StepThreeRegistration` initializes payment and redirects to Paystack.
-   - Paystack returns to `PaymentController.CallBack` where verification happens.
-   - If payment verifies, the app finalizes the student creation:
-     - Preferred path: `StudentService.CreateFromDraftAsync` (draft -> User + Student + Payment -> delete draft)
-     - Fallback path: `StudentService.CreateAsync` (legacy session-backed flow)
-
-### Paystack webhook (optional)
-
-- Endpoint: `POST /webhooks/paystack` (see `WebhookController`)
-- Validates `x-paystack-signature` (HMAC SHA512 over raw JSON body with your secret key)
-- Updates `Payment.PaymentStatus` to `Successful` or `Failed` idempotently
-
-### Admission status update email
-
-- Service: `StudentService.UpdateAdmissionStatus` triggers `IMailService.SendAdmissionStatus(...)`
-- Template: `Views/SendAdmissionStatus.cshtml` (rendered by `Implementation/TemplateEngine/RazorEngine.cs`)
-- Sender: `Messaging/MailSender.cs` via Brevo API
-
-## Database and seeding
-
-- `Persistence/Context/StudentDbContext.cs` defines relationships and seed data.
-- Seeded roles:
-  - `Admin`
-  - `Student`
-- Seeded admin user + profile are added in `SeedAdminData(...)`.
-
-See `docs/DATABASE.md` for entity relationships and migration notes.
-
-## Documentation index
-
-- `docs/SETUP.md` - local setup, run, troubleshooting
-- `docs/ARCHITECTURE.md` - architecture, request flow, folder responsibilities
-- `docs/CONFIGURATION.md` - configuration keys, secrets management, examples
-- `docs/DATABASE.md` - schema overview, migrations, seed data
-- `docs/PAYMENTS.md` - Paystack initialize/verify/webhook behavior
-- `docs/EMAILS.md` - Brevo integration + Razor email templates
-- `docs/SECURITY.md` - security notes, production hardening checklist
+This project is licensed under the MIT License.
