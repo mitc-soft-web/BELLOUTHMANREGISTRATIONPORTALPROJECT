@@ -710,6 +710,18 @@
         .about-features { grid-template-columns: 1fr; }
         .mitc-nav { padding: 0.8rem 1.2rem; }
     }
+
+    @@media (max-width: 480px) {
+        .hero-inner { gap: 1.8rem; }
+        .hero-text h1 { font-size: 1.85rem; }
+        .hero-buttons { flex-direction: column; width: 100%; }
+        .btn-hero-primary, .btn-hero-outline { width: 100%; justify-content: center; }
+        .stats-inner { grid-template-columns: 1fr; }
+        .stat-box { border-bottom: 1px solid #e5e7eb; border-right: none; padding: 1.2rem 0.5rem; }
+        .gallery-strip { grid-template-columns: 1fr; }
+        .gallery-strip-item img { height: 180px; }
+        .section { padding: 3rem 1rem; }
+    }
 </style>
 
 <!-- ══ NAVBAR ══ -->

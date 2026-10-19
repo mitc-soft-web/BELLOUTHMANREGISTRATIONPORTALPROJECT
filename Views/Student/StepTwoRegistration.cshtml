@@ -234,9 +234,13 @@
     .results-header,
     .result-row {
         display: grid;
-        grid-template-columns: 2.1fr 1fr 1fr;
+        grid-template-columns: 2.2fr 1.1fr 1.1fr 42px;
         gap: 12px;
-        align-items: start;
+        align-items: end;
+    }
+
+    .result-row .field-group label {
+        display: none;
     }
 
     .results-header {
@@ -458,35 +462,33 @@
         }
     }
 
-    @@media (max-width: 900px) {
-        .results-header,
-        .result-row {
-            grid-template-columns: 1fr;
-        }
-    }
-
     @@media (max-width: 768px) {
         .registration-shell {
-            padding: 24px 10px;
+            padding: 20px 8px;
         }
 
         .registration-header,
         .form-body,
         .progress-steps {
-            padding-left: 20px;
-            padding-right: 20px;
+            padding-left: 16px;
+            padding-right: 16px;
         }
 
         .progress-steps {
-            padding: 22px 16px 20px;
+            padding: 18px 12px 16px;
         }
 
         .step-connector {
-            max-width: 50px;
+            max-width: 35px;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
         }
 
         .form-actions {
             flex-direction: column-reverse;
+            gap: 10px;
         }
 
         .btn {
@@ -495,19 +497,55 @@
 
         .file-upload-label {
             flex-wrap: wrap;
+            padding: 16px;
         }
 
         .upload-badge {
             margin-left: 0;
         }
-    }
 
-    .results-header,
-    .result-row {
-        display: grid;
-        grid-template-columns: 2.1fr 1fr 1fr auto !important;
-        gap: 12px;
-        align-items: end;
+        .results-header {
+            display: none !important;
+        }
+
+        .result-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+            padding: 14px !important;
+            border-bottom: 6px solid #f1f5f9 !important;
+        }
+
+        .result-row .field-group label {
+            display: block !important;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+            color: #475569;
+        }
+
+        .result-row .field-group:nth-child(1) {
+            grid-column: span 2 !important;
+        }
+
+        .result-row .field-group:nth-child(2) {
+            grid-column: 1 !important;
+        }
+
+        .result-row .field-group:nth-child(3) {
+            grid-column: 2 !important;
+        }
+
+        .result-row .btn-remove-row {
+            grid-column: span 2 !important;
+            width: 100% !important;
+            height: 38px !important;
+            font-size: 0.85rem !important;
+            margin-top: 4px;
+        }
+
+        .result-row .btn-remove-row::after {
+            content: " Remove Subject";
+        }
     }
 
     .btn-add-row {

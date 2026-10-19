@@ -237,17 +237,35 @@
         .mobile-toggle {
             display: none;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            padding: 5px;
+            padding: 8px 6px;
+            background: transparent;
+            border: none;
+            outline: none;
+            z-index: 1001;
         }
 
             .mobile-toggle span {
                 width: 25px;
-                height: 2px;
-                background: #333;
-                margin: 3px 0;
-                transition: 0.3s;
+                height: 2.5px;
+                background: #1a1a1a;
+                margin: 2.5px 0;
+                transition: all 0.3s ease;
                 border-radius: 2px;
+            }
+
+            .mobile-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .mobile-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .mobile-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
             }
 
         .container {
@@ -426,23 +444,39 @@
             }
         }
 
-        @@media (max-width: 480px) {
-            .btn-login span,
-            .btn-register span {
+        @@media (max-width: 640px) {
+            .top-bar .social-links {
                 display: none;
             }
 
-            .btn-login, .btn-register {
-                padding: 8px 12px;
+            .top-bar .container {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .logo img {
+                height: 38px;
             }
 
-                .btn-login::after {
-                    content: "Login";
-                }
+            nav .container {
+                height: 60px;
+                padding: 0 12px;
+            }
 
-                .btn-register::after {
-                    content: "Register";
-                }
+            .nav-center {
+                top: 60px;
+            }
+
+            .btn-login, .btn-register {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .nav-right {
+                gap: 6px;
+            }
         }
     </style>
     @await RenderSectionAsync("Styles", required: false)
@@ -506,6 +540,11 @@
                         <a  asp-controller="Student" asp-action="StepOneRegistration" class="btn-register"><span>Register</span></a>
                         <a  asp-controller="User" asp-action="Login" class="btn-login"><span>Login</span></a>
                     </div>
+                    <button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Toggle navigation menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
             </div>
         </nav>
@@ -581,9 +620,12 @@
         const mobileToggle = document.getElementById('mobileToggle');
         const navCenter = document.getElementById('navCenter');
 
-        mobileToggle.addEventListener('click', () => {
-            navCenter.classList.toggle('active');
-        });
+        if (mobileToggle && navCenter) {
+            mobileToggle.addEventListener('click', () => {
+                navCenter.classList.toggle('active');
+                mobileToggle.classList.toggle('active');
+            });
+        }
 
         // Handle dropdown clicks on mobile
         document.querySelectorAll('.has-dropdown > a').forEach(item => {
@@ -598,8 +640,9 @@
 
         // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('nav') && navCenter.classList.contains('active')) {
+            if (navCenter && mobileToggle && !e.target.closest('nav') && navCenter.classList.contains('active')) {
                 navCenter.classList.remove('active');
+                mobileToggle.classList.remove('active');
             }
         });
     </script>

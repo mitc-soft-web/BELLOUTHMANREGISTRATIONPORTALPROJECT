@@ -357,7 +357,6 @@
 
             .modern-table tbody tr:hover {
                 background: linear-gradient(to right, #f0f6ff, #ffffff);
-                transform: scale(1.01);
                 box-shadow: 0 4px 12px rgba(0, 102, 204, 0.08);
             }
 
@@ -571,6 +570,25 @@
         .modern-table th,
         .modern-table td {
             padding: 1rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .page-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .dashboard-header {
+            padding: 1.5rem 1rem;
+        }
+
+        .header-stats {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .stat-item {
+            width: 100%;
         }
     }
 </style>
