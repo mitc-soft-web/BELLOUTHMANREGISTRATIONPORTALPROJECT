@@ -1,4 +1,4 @@
-﻿@model Mitc_Registration_Portal.Models.DTOs.Users.LoginRequestModel
+@model Mitc_Registration_Portal.Models.DTOs.Users.LoginRequestModel
 @{
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -280,7 +280,7 @@
 <div class="login-wrapper">
     <div class="login-container">
         <div class="login-banner">
-            <img src="https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg" alt="MITC Logo">
+            <img src="~/assets/mitc_logo.png" onerror="this.onerror=null;this.src='https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg';" asp-append-version="true" alt="MITC Logo">
             <h2>Welcome Back!</h2>
             <p>Access your student portal to view Admission Status, assignments and more. Your journey to technical excellence continues here.</p>
         </div>
