@@ -15,6 +15,7 @@ namespace Mitc_Registration_Portal.Controllers
 {
     [ApiController]
     [Route("webhooks/paystack")]
+    [Route("api/webhook/paystack")]
     public class WebhookController(
         ILogger<WebhookController> logger,
         IConfiguration config,
