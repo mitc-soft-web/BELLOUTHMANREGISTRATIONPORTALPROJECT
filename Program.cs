@@ -79,7 +79,7 @@ builder.Services.AddFluentValidationClientsideAdapters();
 
 builder.Services.AddDbContext<StudentDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("MITCContext"),
-        new MySqlServerVersion(new Version(9, 0, 0))
+        new MySqlServerVersion(new Version(8, 0, 36))
     ));
 
 builder.Services.AddScoped<IUserStore<User>, Mitc_Registration_Portal.Identity.UserStore>();
@@ -116,12 +116,21 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Apply migrations automatically in Development so local runs don't require manual update steps.
-if (app.Environment.IsDevelopment())
+// Apply migrations automatically on startup so database schema and seeds are created on new deployments.
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
-    db.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        logger.LogInformation("Applying database migrations...");
+        db.Database.Migrate();
+        logger.LogInformation("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while applying database migrations.");
+    }
 }
 
 // Configure the HTTP request pipeline.
