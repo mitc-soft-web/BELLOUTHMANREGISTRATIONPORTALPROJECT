@@ -57,6 +57,16 @@ namespace Mitc_Registration_Portal.Implementation.Services
                 _logger.LogError($"Failed to send email to {toEmail}. Brevo Error: {errorResponse}");
                 return false;
             }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, $"Network error while sending Brevo email to {toEmail}");
+                return false;
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(ex, $"Brevo email request timed out for {toEmail}");
+                return false;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Exception occurred while sending email to {toEmail}");

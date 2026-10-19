@@ -1,0 +1,7 @@
+**/.git
+**/.github
+**/.vs
+**/bin
+**/obj
+**/.dotnet_cli_home
+Mitc_Registration_Portal.Tests

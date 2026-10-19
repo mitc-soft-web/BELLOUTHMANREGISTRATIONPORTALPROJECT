@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Mitc_Registration_Portal.Interface.Services;
 using Mitc_Registration_Portal.Models.DTOs;
 using System;
@@ -35,35 +35,43 @@ namespace Mitc_Registration_Portal.Implementation.Services
                 return false;
             }
 
-            var url = $"https://www.google.com/recaptcha/api/siteverify?secret={Uri.EscapeDataString(_secretKey)}&response={Uri.EscapeDataString(token)}";
-            using var response = await _httpClient.PostAsync(url,null).ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                _logger.LogWarning("reCAPTCHA verification request failed with status code {StatusCode}.", response.StatusCode);
+                var url = $"https://www.google.com/recaptcha/api/siteverify?secret={Uri.EscapeDataString(_secretKey)}&response={Uri.EscapeDataString(token)}";
+                using var response = await _httpClient.PostAsync(url, null).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("reCAPTCHA verification request failed with status code {StatusCode}.", response.StatusCode);
+                    return false;
+                }
+
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var result = JsonSerializer.Deserialize<RecaptchaResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (result == null)
+                {
+                    _logger.LogWarning("reCAPTCHA verification returned an empty or unreadable response.");
+                    return false;
+                }
+
+                if (!result.Success)
+                {
+                    _logger.LogWarning("reCAPTCHA verification was not successful.");
+                    return false;
+                }
+
+                if (result.Score < 0.5)
+                {
+                    _logger.LogWarning("Potential bot blocked by reCAPTCHA. Score: {Score}", result.Score);
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred during reCAPTCHA verification.");
                 return false;
             }
-
-            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var result = JsonSerializer.Deserialize<RecaptchaResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (result == null)
-            {
-                _logger.LogWarning("reCAPTCHA verification returned an empty or unreadable response.");
-                return false;
-            }
-
-            if (!result.Success)
-            {
-                _logger.LogWarning("reCAPTCHA verification was not successful.");
-                return false;
-            }
-
-            if (result.Score < 0.5)
-            {
-                _logger.LogWarning("Potential bot blocked by reCAPTCHA. Score: {Score}", result.Score);
-                return false;
-            }
-
-            return true;
         }
         //try
         //{

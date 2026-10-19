@@ -5,5 +5,6 @@
         public string Status { get; set; }
         public string Channel {  get; set; }
         public string PaidAt { get; set; }
+        public long? AmountKobo { get; set; }
     }
 }

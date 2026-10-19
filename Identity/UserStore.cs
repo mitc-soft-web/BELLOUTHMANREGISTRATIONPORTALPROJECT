@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Mitc_Registration_Portal.Models.Entities;
 using Mitc_Registration_Portal.Persistence.Context;
@@ -23,7 +23,8 @@ namespace Mitc_Registration_Portal.Identity
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            var role = await _context.Set<Role>().SingleAsync(r => r.Name == roleName, cancellationToken: cancellationToken);
+            var role = await _context.Set<Role>().FirstOrDefaultAsync(r => r.Name.ToLower() == roleName.ToLower(), cancellationToken: cancellationToken);
+            if (role == null) return;
             await _context.Set<UserRole>().AddAsync(new UserRole
             {
                 UserId = user.Id,
@@ -69,7 +70,7 @@ namespace Mitc_Registration_Portal.Identity
             {
                 throw new ArgumentNullException(nameof(normalizedEmail));
             }
-            return await _context.Set<User>().SingleOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail, cancellationToken);
+            return await _context.Set<User>().FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail, cancellationToken);
         }
 
         public async Task<User> FindByIdAsync(string userId, CancellationToken cancellationToken)
@@ -232,7 +233,7 @@ namespace Mitc_Registration_Portal.Identity
             }
             var userRoles = _context.Set<UserRole>()
                 .Include(u => u.Role)
-                .Where(u => u.Role.Name == roleName && u.UserId == user.Id);
+                .Where(u => u.Role.Name.ToLower() == roleName.ToLower() && u.UserId == user.Id);
             _context.Set<UserRole>().RemoveRange(userRoles);
             await _context.SaveChangesAsync(cancellationToken);
         }

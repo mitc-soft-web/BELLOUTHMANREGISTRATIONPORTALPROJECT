@@ -16,6 +16,9 @@ namespace Mitc_Registration_Portal.Interface.Services
         // Reference is optional: Payment callback can supply it even if session is missing.
         Task<BaseResponse<bool>> VerifyPaymentAsync(string? reference = null);
 
+        // Unified idempotent settlement called by both webhook and callback
+        Task<BaseResponse<bool>> ProcessPaymentSuccessAndEnrollAsync(string reference, decimal? paidAmountNaira = null, string? paidAt = null);
+
         Task<BaseResponse<StudentDtos>> GetByIdAsync(Guid studentId, CancellationToken cancellationToken);
         Task<BaseResponse<IEnumerable<StudentDtos>>> StudentAsync();
         Task<BaseResponse<bool>> DeleteAsync(Guid studentId, CancellationToken cancellationToken);

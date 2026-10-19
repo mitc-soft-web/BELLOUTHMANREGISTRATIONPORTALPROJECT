@@ -1,9 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>a0342ce9-8c1c-48c2-bcf0-ddbaa3c700c7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,9 +20,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
     <PackageReference Include="MimeKit" Version="4.15.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
     <PackageReference Include="Scrutor" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Mitc_Registration_Portal.Tests\**" />
+    <Content Remove="Mitc_Registration_Portal.Tests\**" />
+    <EmbeddedResource Remove="Mitc_Registration_Portal.Tests\**" />
+    <None Remove="Mitc_Registration_Portal.Tests\**" />
   </ItemGroup>
 
 </Project>

@@ -61,7 +61,8 @@ Create or edit your local `appsettings.json` (note: `appsettings.json` is ignore
   },
   "Paystack": {
     "SecretKey": "sk_test_...",
-    "CallbackUrl": "https://your-domain.com/Payment/Callback"
+    "CallbackUrl": "https://your-domain.com/Payment/CallBack",
+    "RegistrationFeeNaira": 5000
   },
   "MITCAPIs": {
     "BrevoApiKey": "xkeysib-..."

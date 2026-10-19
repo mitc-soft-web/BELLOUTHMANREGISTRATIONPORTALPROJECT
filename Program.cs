@@ -3,7 +3,9 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using Mitc_Registration_Portal.Configuration;
+using Mitc_Registration_Portal.Interface.Services;
 using Mitc_Registration_Portal.Contracts.MailingService;
 using Mitc_Registration_Portal.Contracts.Messaging;
 using Mitc_Registration_Portal.Identity;
@@ -23,11 +25,43 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddOptions<PaystackConfiguration>()
+    .Bind(builder.Configuration.GetSection(PaystackConfiguration.SectionName))
+    .Validate(
+        o => o.RegistrationFeeNaira > 0,
+        "Paystack:RegistrationFeeNaira must be greater than zero.")
+    .ValidateOnStart();
+
+builder.Services.AddHttpClient<IPayStackService, PayStackService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.paystack.co/");
+})
+.AddStandardResilienceHandler(options =>
+{
+    // Fast-fail attempt timeout: 3.5 seconds for connection/DNS
+    options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(3.5);
+
+    // Total timeout across all attempts
+    options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(10);
+
+    // Exponential backoff with jitter on transient errors (502, 503, 504, 408)
+    options.Retry.MaxRetryAttempts = 2;
+    options.Retry.BackoffType = DelayBackoffType.Exponential;
+    options.Retry.UseJitter = true;
+    options.Retry.Delay = TimeSpan.FromMilliseconds(500);
+
+    // Circuit breaker: trips if >= 50% of requests fail within 30s window (min 5 requests)
+    options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+    options.CircuitBreaker.FailureRatio = 0.5;
+    options.CircuitBreaker.MinimumThroughput = 5;
+    options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
+});
+
 builder.Services.AddHttpClient();
 
 builder.Services.Scan(scan => scan
     .FromApplicationDependencies(a => a.FullName!.StartsWith("Mitc_Registration_Portal"))
-    .AddClasses(c => c.Where(t => t.Name.EndsWith("Service")))
+    .AddClasses(c => c.Where(t => t.Name.EndsWith("Service") && t.Name != nameof(PayStackService)))
         .AsImplementedInterfaces()
         .WithScopedLifetime()
     .AddClasses(c => c.Where(t => t.Name.EndsWith("Repository")))

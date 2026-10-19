@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Mitc_Registration_Portal.Configuration;
 using Mitc_Registration_Portal.Contracts.MailingService;
 using Mitc_Registration_Portal.Contracts.Services;
 using Mitc_Registration_Portal.Interface.Repositories;
@@ -31,7 +33,9 @@ namespace Mitc_Registration_Portal.Implementation.Services
         UserManager<User> userManager,
         IPaymentRepository paymentRepository,
         IRegistrationDraftRepository registrationDraftRepository,
-        IMailService mailService) : IStudentService
+        IMailService mailService,
+        Microsoft.Extensions.Options.IOptions<PaystackConfiguration> paystackOptions,
+        IPayStackService payStackService) : IStudentService
     {
         private readonly UserManager<User> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         private readonly IUnitOfWork _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -45,8 +49,11 @@ namespace Mitc_Registration_Portal.Implementation.Services
         private readonly IPaymentRepository _paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
         private readonly IRegistrationDraftRepository _registrationDraftRepository = registrationDraftRepository ?? throw new ArgumentNullException(nameof(registrationDraftRepository));
         private readonly IMailService _mailService = mailService ?? throw new ArgumentNullException(nameof(mailService));
+        private readonly PaystackConfiguration _paystack = paystackOptions?.Value ?? throw new ArgumentNullException(nameof(paystackOptions));
+        private readonly IPayStackService _payStackService = payStackService ?? throw new ArgumentNullException(nameof(payStackService));
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, SemaphoreSlim> _referenceLocks = new();
 
-        private ISession Session => _httpContextAccessor.HttpContext!.Session;
+        private ISession? Session => _httpContextAccessor.HttpContext?.Session;
 
         public async Task<BaseResponse<bool>> CreateAsync()
         {
@@ -298,29 +305,144 @@ namespace Mitc_Registration_Portal.Implementation.Services
 
         public async Task<BaseResponse<bool>> VerifyPaymentAsync(string? reference = null)
         {
-            var referenceVerification = reference ?? Session.GetString("Reg_PayRef");
+            var referenceVerification = reference ?? Session?.GetString("Reg_PayRef");
             if (string.IsNullOrWhiteSpace(referenceVerification))
             {
                 return new BaseResponse<bool> { Status = false, Message = "Payment reference missing." };
             }
 
-            var isPaymentSuccessful = await _paymentService.VerifyPaymentAsync(referenceVerification);
-            if (!isPaymentSuccessful)
+            return await ProcessPaymentSuccessAndEnrollAsync(referenceVerification);
+        }
+
+        public async Task<BaseResponse<bool>> ProcessPaymentSuccessAndEnrollAsync(
+            string reference,
+            decimal? paidAmountNaira = null,
+            string? paidAt = null)
+        {
+            if (string.IsNullOrWhiteSpace(reference))
             {
+                return new BaseResponse<bool> { Status = false, Message = "Payment reference is required." };
+            }
+
+            var sem = _referenceLocks.GetOrAdd(reference, _ => new SemaphoreSlim(1, 1));
+            await sem.WaitAsync();
+            try
+            {
+                var payment = await _paymentRepository.GetByReference(reference);
+            if (payment == null)
+            {
+                _logger.LogWarning("Payment not found for reference {Reference}", reference);
                 return new BaseResponse<bool>
                 {
-                    Message = "Verification failed",
                     Status = false,
+                    Message = $"Payment record not found for reference {reference}."
                 };
             }
 
-            var draft = await _registrationDraftRepository.GetByPaymentReferenceAsync(referenceVerification);
-            if (draft != null)
+            // 1. Idempotency Check: if student is already created and payment successful, return true
+            if (payment.Student != null)
             {
-                return await CreateFromDraftAsync(draft, referenceVerification);
+                _logger.LogInformation("Payment {Reference} is already settled and linked to student {StudentId}.", reference, payment.Student.Id);
+                var existingDraft = await _registrationDraftRepository.GetByPaymentReferenceAsync(reference);
+                if (existingDraft != null)
+                {
+                    _registrationDraftRepository.Delete(existingDraft);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+                return new BaseResponse<bool> { Status = true, Message = "Registration is already complete." };
             }
 
-            return await CreateAsync();
+            // 2. Settle payment state if not yet marked Successful
+            if (!string.Equals(payment.PaymentStatus, "Successful", StringComparison.OrdinalIgnoreCase))
+            {
+                if (paidAmountNaira.HasValue)
+                {
+                    if (!_paystack.MatchesExpectedFee(paidAmountNaira.Value))
+                    {
+                        _logger.LogWarning(
+                            "Payment amount {Amount} for {Reference} does not match expected fee {ExpectedFee}.",
+                            paidAmountNaira.Value,
+                            reference,
+                            _paystack.RegistrationFeeNaira);
+                        return new BaseResponse<bool> { Status = false, Message = "Payment amount did not match expected fee." };
+                    }
+                }
+                else
+                {
+                    // Callback verification path: query gateway
+                    var verifyResult = await _payStackService.Verify(reference);
+                    if (!verifyResult.Status)
+                    {
+                        return new BaseResponse<bool> { Status = false, Message = verifyResult.Message };
+                    }
+
+                    paidAt = verifyResult.Data?.PaidAt;
+                    var kobo = verifyResult.Data?.AmountKobo ?? (long)(_paystack.RegistrationFeeNaira * 100m);
+                    paidAmountNaira = kobo / 100m;
+                }
+
+                payment.PaymentStatus = "Successful";
+                payment.PaidAt = paidAt ?? payment.PaidAt ?? DateTime.UtcNow.ToString("O");
+                payment.Amount = paidAmountNaira ?? _paystack.RegistrationFeeNaira;
+                payment.ConcurrencyStamp = Guid.NewGuid();
+
+                _paymentRepository.Update(payment);
+                try
+                {
+                    await _unitOfWork.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // Concurrency conflict: another concurrent thread already updated the Payment record.
+                    _logger.LogInformation("Concurrent payment status update detected for reference {Reference}; reloading payment state.", reference);
+                    payment = await _paymentRepository.GetByReference(reference);
+                    if (payment == null)
+                    {
+                        return new BaseResponse<bool> { Status = false, Message = $"Payment record not found for reference {reference}." };
+                    }
+                }
+            }
+
+            // 3. Complete student registration from draft
+            var draft = await _registrationDraftRepository.GetByPaymentReferenceAsync(reference);
+            if (draft != null)
+            {
+                return await CreateFromDraftAsync(draft, reference);
+            }
+
+            // Fallback for legacy session-backed registrations
+            string? email = null;
+            try
+            {
+                email = Session?.GetString("Email");
+            }
+            catch
+            {
+                // Non-HTTP context (e.g. background task)
+            }
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                draft = await _registrationDraftRepository.GetByEmailAsync(email);
+                if (draft != null)
+                {
+                    return await CreateFromDraftAsync(draft, reference);
+                }
+
+                return await CreateAsync();
+            }
+
+            // If payment is already Successful and draft was already converted, verify user exists
+            return new BaseResponse<bool> { Status = true, Message = "Payment confirmed successfully." };
+            }
+            finally
+            {
+                sem.Release();
+                if (sem.CurrentCount == 1)
+                {
+                    _referenceLocks.TryRemove(new KeyValuePair<string, SemaphoreSlim>(reference, sem));
+                }
+            }
         }
 
         public async Task<BaseResponse<bool>> StepOneRegistration(CreateStudentRequestModel model)
@@ -617,43 +739,100 @@ namespace Mitc_Registration_Portal.Implementation.Services
                 return new BaseResponse<bool> { Status = false, Message = "Payment record not found for reference." };
             }
 
-            var studentUser = new User
+            // If payment already has a linked student, we are already done!
+            if (payment.Student != null)
             {
-                Email = draft.Email,
-                DateCreated = DateTime.UtcNow,
-                PasswordHash = draft.PasswordHash
-            };
+                _registrationDraftRepository.Delete(draft);
+                await _unitOfWork.SaveChangesAsync(CancellationToken.None);
+                return new BaseResponse<bool> { Status = true, Message = "Student already registered." };
+            }
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var createResult = await _userManager.CreateAsync(studentUser);
-                if (createResult == null || !createResult.Succeeded)
-                {
-                    var errors = createResult == null
-                        ? "Unknown error creating user"
-                        : string.Join(" | ", createResult.Errors.Select(e => e.Description));
-                    _logger.LogError("User creation unsuccessful: {Errors}", errors);
+                var existingUser = await _userManager.FindByEmailAsync(draft.Email);
+                User studentUser;
 
-                    await transaction.RollbackAsync();
-                    return new BaseResponse<bool>
+                if (existingUser != null)
+                {
+                    studentUser = existingUser;
+                    var existingStudent = await _studentRepository.Get<Student>(s => s.UserId == existingUser.Id);
+                    if (existingStudent != null)
                     {
-                        Message = "User creation unsuccessful: " + errors,
-                        Status = false,
-                    };
+                        if (existingStudent.PaymentId == Guid.Empty || existingStudent.PaymentId != payment.Id)
+                        {
+                            existingStudent.Payment = payment;
+                            payment.Student = existingStudent;
+                            _studentRepository.Update(existingStudent);
+                            _paymentRepository.Update(payment);
+                        }
+
+                        _registrationDraftRepository.Delete(draft);
+                        await _unitOfWork.SaveChangesAsync(CancellationToken.None);
+                        await transaction.CommitAsync();
+                        return new BaseResponse<bool> { Status = true, Message = "Student Added Successfully" };
+                    }
                 }
-
-                var addRoleResult = await _userManager.AddToRoleAsync(studentUser, "Student");
-                if (!addRoleResult.Succeeded)
+                else
                 {
-                    var errors = string.Join(" | ", addRoleResult.Errors.Select(e => e.Description));
-                    _logger.LogError("Unable to add user to role: {Errors}", errors);
-                    await transaction.RollbackAsync();
-                    return new BaseResponse<bool>
+                    studentUser = new User
                     {
-                        Message = "Unable to add user to role: " + errors,
-                        Status = false
+                        Email = draft.Email,
+                        DateCreated = DateTime.UtcNow,
+                        PasswordHash = draft.PasswordHash
                     };
+
+                    try
+                    {
+                        var createResult = await _userManager.CreateAsync(studentUser);
+                        if (createResult == null || !createResult.Succeeded)
+                        {
+                            // Check if created concurrently by another thread
+                            existingUser = await _userManager.FindByEmailAsync(draft.Email);
+                            if (existingUser != null)
+                            {
+                                studentUser = existingUser;
+                            }
+                            else
+                            {
+                                var errors = createResult == null
+                                    ? "Unknown error creating user"
+                                    : string.Join(" | ", createResult.Errors.Select(e => e.Description));
+                                _logger.LogError("User creation unsuccessful: {Errors}", errors);
+
+                                await transaction.RollbackAsync();
+                                return new BaseResponse<bool>
+                                {
+                                    Message = "User creation unsuccessful: " + errors,
+                                    Status = false,
+                                };
+                            }
+                        }
+                    }
+                    catch (DbUpdateException)
+                    {
+                        // Concurrent insert collision; fetch the newly created user
+                        existingUser = await _userManager.FindByEmailAsync(draft.Email);
+                        if (existingUser != null)
+                        {
+                            studentUser = existingUser;
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    var isInRole = await _userManager.IsInRoleAsync(studentUser, "Student");
+                    if (!isInRole)
+                    {
+                        var addRoleResult = await _userManager.AddToRoleAsync(studentUser, "Student");
+                        if (!addRoleResult.Succeeded)
+                        {
+                            var errors = string.Join(" | ", addRoleResult.Errors.Select(e => e.Description));
+                            _logger.LogWarning("Unable to add user to role: {Errors}", errors);
+                        }
+                    }
                 }
 
                 var student = new Student
@@ -670,7 +849,7 @@ namespace Mitc_Registration_Portal.Implementation.Services
                     City = draft.City,
                     DateCreated = DateTime.UtcNow,
                     DateOfBirth = draft.DateOfBirth,
-                    Gender = draft.Gender,
+                    Gender = draft.Gender ?? Gender.Other,
                     Email = draft.Email,
                     IsAdmitted = false,
                     NIN = draft.NIN,
@@ -718,6 +897,15 @@ namespace Mitc_Registration_Portal.Implementation.Services
             {
                 _logger.LogError(ex, "Error creating student from draft, rolling back.");
                 try { await transaction.RollbackAsync(); } catch (Exception rbEx) { _logger.LogError(rbEx, "Rollback failed"); }
+
+                // Check if concurrent thread already created the student
+                var confirmedStudent = await _studentRepository.Get<Student>(s => s.Email == draft.Email);
+                if (confirmedStudent != null)
+                {
+                    _logger.LogInformation("Concurrent registration completed successfully for {Email}", draft.Email);
+                    return new BaseResponse<bool> { Status = true, Message = "Student Added Successfully" };
+                }
+
                 return new BaseResponse<bool> { Status = false, Message = "An error occurred while creating Student" };
             }
         }

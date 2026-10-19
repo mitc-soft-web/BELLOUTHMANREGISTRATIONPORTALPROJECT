@@ -70,6 +70,34 @@ namespace Mitc_Registration_Portal.Persistence.Context
                 .HasForeignKey<Student>(s => s.PaymentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            builder.Entity<Student>()
+                .HasIndex(s => s.Email)
+                .IsUnique();
+
+            builder.Entity<Payment>(entity =>
+            {
+                entity.Property(p => p.Reference)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.HasIndex(p => p.Reference)
+                    .IsUnique();
+
+                entity.Property(p => p.PaymentStatus)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(p => p.Amount)
+                    .HasPrecision(18, 2);
+
+                entity.Property(p => p.ConcurrencyStamp)
+                    .IsConcurrencyToken();
+            });
+
             // In-progress registration state for idempotent retries + payment callback reliability.
             builder.Entity<RegistrationDraft>()
                 .Property(d => d.Email)

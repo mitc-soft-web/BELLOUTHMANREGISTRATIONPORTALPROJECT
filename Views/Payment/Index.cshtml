@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Student Registration - Payment";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var feeDisplay = ViewBag.RegistrationFeeDisplay as string ?? "5,000.00";
 }
 
 <style>
@@ -306,6 +307,18 @@
         font-size: 0.88em;
     }
 
+    .payment-error {
+        background: #fff4f4;
+        border: 1.5px solid #f2b8b8;
+        border-radius: 10px;
+        color: #8a1f1f;
+        font-size: 0.92em;
+        font-weight: 600;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        padding: 14px 18px;
+    }
+
     /* ─── Payment Methods ─────────────────────────────── */
     .payment-methods {
         margin-bottom: 28px;
@@ -580,6 +593,16 @@
         </div>
 
         <div class="payment-content">
+            @if (!string.IsNullOrWhiteSpace(ViewBag.PaymentError as string))
+            {
+                <div class="payment-error" role="alert">
+                    @ViewBag.PaymentError
+                </div>
+            }
+
+            <div class="payment-error" id="offlineAlert" role="alert" hidden>
+                You appear to be offline. Connect to the internet before starting payment — we will not contact Paystack until you are online.
+            </div>
 
             <div class="payment-summary">
                 <div class="summary-header">
@@ -598,7 +621,7 @@
                 <div class="summary-items">
                     <div class="summary-item">
                         <span class="item-label">Registration Fee</span>
-                        <span class="item-value">₦5,000.00</span>
+                        <span class="item-value">₦@feeDisplay</span>
                     </div>
                     <div class="summary-item">
                         <span class="item-label">Processing Fee</span>
@@ -612,7 +635,7 @@
 
                 <div class="summary-total">
                     <span class="total-label">Total Amount:</span>
-                    <span class="total-amount">₦5,000.00</span>
+                    <span class="total-amount">₦@feeDisplay</span>
                 </div>
             </div>
 
@@ -665,6 +688,7 @@
 
 
             <form asp-action="StepThreeRegistration" method="post" id="paymentForm">
+                @Html.AntiForgeryToken()
                 <div class="terms-checkbox">
                     <input type="checkbox" id="agreeTerms" required />
                     <label for="agreeTerms">
@@ -685,7 +709,7 @@
                         <svg class="pay-icon" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z" />
                         </svg>
-                        <span class="pay-text">Proceed to Payment — ₦5,000.00</span>
+                        <span class="pay-text">Proceed to Payment — ₦@feeDisplay</span>
                         <div class="spinner"></div>
                     </button>
                 </div>
@@ -696,14 +720,33 @@
 
 @section Scripts {
     <script>
-        const payBtn      = document.getElementById('payBtn');
-        const agreeTerms  = document.getElementById('agreeTerms');
+        const payBtn       = document.getElementById('payBtn');
+        const agreeTerms   = document.getElementById('agreeTerms');
+        const offlineAlert = document.getElementById('offlineAlert');
+        const paymentForm  = document.getElementById('paymentForm');
 
-        agreeTerms.addEventListener('change', function () {
-            payBtn.disabled = !this.checked;
-        });
+        function syncOfflineState() {
+            const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+            if (offlineAlert) {
+                offlineAlert.hidden = !offline;
+            }
+            if (payBtn && agreeTerms) {
+                payBtn.disabled = !agreeTerms.checked || offline;
+            }
+        }
 
-        document.getElementById('paymentForm')?.addEventListener('submit', function () {
+        agreeTerms.addEventListener('change', syncOfflineState);
+        window.addEventListener('online', syncOfflineState);
+        window.addEventListener('offline', syncOfflineState);
+        syncOfflineState();
+
+        paymentForm?.addEventListener('submit', function (e) {
+            if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+                e.preventDefault();
+                syncOfflineState();
+                return;
+            }
+
             payBtn.classList.add('loading');
             payBtn.disabled = true;
         });

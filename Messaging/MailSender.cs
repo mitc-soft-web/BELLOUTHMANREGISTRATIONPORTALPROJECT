@@ -1,4 +1,4 @@
-﻿using brevo_csharp.Api;
+using brevo_csharp.Api;
 using brevo_csharp.Model;
 using Mitc_Registration_Portal.Contracts.Messaging;
 using Mitc_Registration_Portal.Exceptions.Messaging;
@@ -68,15 +68,25 @@ namespace Mitc_Registration_Portal.Messaging
                     await apiInstance.SendTransacEmailAsync(sendSmtpEmail);
                     return true;
                 }
+                catch (HttpRequestException e)
+                {
+                    _logger.LogError(e, "Brevo email could not be sent because the network request failed.");
+                    return false;
+                }
+                catch (TaskCanceledException e)
+                {
+                    _logger.LogError(e, "Brevo email could not be sent because the request timed out.");
+                    return false;
+                }
                 catch (Exception e)
                 {
-                    _logger.LogError("Exception when calling TransactionalEmailsApi.SendTransacEmail: " + e.Message);
-                    throw new MailSenderException(e.Message, e);
+                    _logger.LogError(e, "Exception when calling TransactionalEmailsApi.SendTransacEmail: " + e.Message);
+                    return false;
                 }
             }
 
             _logger.LogError("SMTP API Key is not configured.");
-            throw new MailSenderException("SMTP API Key is not configured.");
+            return false;
 
         }
 
@@ -87,6 +97,4 @@ namespace Mitc_Registration_Portal.Messaging
             return ms.ToArray();
         }
     }
-    
 }
-
