@@ -79,7 +79,7 @@ namespace Mitc_Registration_Portal.Controllers
       <table role='presentation' width='600' style='background:#ffffff; border-radius:12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-collapse: collapse;'>
         <tr>
           <td style='padding:32px 30px 24px; background:#005bbb; border-radius:12px 12px 0 0; text-align:center;'>
-            <img src='https://tensest-tawna-instructedly.ngrok-free.dev/assets/mitc_logo.png' style='height:55px; margin-bottom:10px;' alt='MITC Logo' />
+            <img src='https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg' style='height:55px; margin-bottom:10px;' alt='MITC Logo' />
             <div style='font-size:22px; font-weight:700; color:#ffffff; letter-spacing:-0.025em;'>Email Verification</div>
           </td>
         </tr>

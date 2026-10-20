@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Mitc_Registration_Portal.Configuration;
 using Mitc_Registration_Portal.Contracts.MailingService;
 using Mitc_Registration_Portal.Contracts.Messaging;
@@ -26,8 +26,9 @@ namespace Mitc_Registration_Portal.Implementation.MailingService
                     Email = email,
                     Title = title,
                     Status = status,
-                    DepartmentName = departmentName
-
+                    DepartmentName = departmentName,
+                    ActionUrl = !string.IsNullOrWhiteSpace(_emailConfiguration.PortalUrl) ? _emailConfiguration.PortalUrl : "https://mitc.iaaae.org",
+                    LogoUrl = !string.IsNullOrWhiteSpace(_emailConfiguration.LogoUrl) ? _emailConfiguration.LogoUrl : "https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg"
                 };
                 var mailBody = await _razorEngine.ParseAsync("SendAdmissionStatus", model);
                 return await _mailSender.Send(_emailConfiguration.FromEmail, _emailConfiguration.FromName, email, name, title, mailBody);

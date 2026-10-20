@@ -8,8 +8,6 @@
 }
 <!DOCTYPE html>
 <html lang="en">
-<!DOCTYPE html>
-<html lang="en">
 <body style="margin:0; background:#f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 <table role="presentation" width="100%" style="background:#f8fafc; padding:40px 15px;">
   <tr>
@@ -18,7 +16,7 @@
 
         <tr>
           <td style="padding:32px 30px 24px; background:#0066cc; border-radius:12px 12px 0 0; text-align:center;">
-            <img src="https://tensest-tawna-instructedly.ngrok-free.dev/assets/mitc_logo.png" style="height:50px; margin-bottom:10px;" alt="MITC Logo" />
+            <img src="@Model.LogoUrl" style="height:50px; margin-bottom:10px;" alt="MITC Logo" />
             <div style="font-size:22px; font-weight:700; color:#ffffff; letter-spacing:-0.025em;">@title</div>
           </td>
         </tr>
@@ -61,7 +59,7 @@
             }
 
             <div style="margin:30px 0; text-align:center;">
-              <a href="https://tensest-tawna-instructedly.ngrok-free.dev/"
+              <a href="@Model.ActionUrl"
                  style="background:#0066cc; color:#ffffff; padding:16px 30px; border-radius:8px; font-weight:600; font-size:15px; text-decoration:none; display:inline-block;">
                 @Model.ActionText
               </a>
