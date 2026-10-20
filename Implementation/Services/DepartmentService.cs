@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Mitc_Registration_Portal.Interface.Repositories;
 using Mitc_Registration_Portal.Interface.Services;
 using Mitc_Registration_Portal.Models.DTOs;
@@ -99,29 +99,44 @@ namespace Mitc_Registration_Portal.Implementation.Services
         }
         public async Task<BaseResponse<IEnumerable<DepartmentDtos>>> GetAllDepartmentsAsync()
         {
-            var getAllDepartments = await _departmentRepository.GetAll<Department>();
-            if (!getAllDepartments.Any())
+            try
             {
-                _logger.LogError($"No department found");
+                var getAllDepartments = await _departmentRepository.GetAll<Department>();
+                if (getAllDepartments == null || !getAllDepartments.Any())
+                {
+                    _logger.LogInformation("No departments found in database");
+                    return new BaseResponse<IEnumerable<DepartmentDtos>>
+                    {
+                        Message = "No department found",
+                        Status = true,
+                        Data = new List<DepartmentDtos>()
+                    };
+                }
+
+                _logger.LogInformation("All departments fetched successfully");
                 return new BaseResponse<IEnumerable<DepartmentDtos>>
                 {
-                    Message = $"No department found",
-                    Status = false,
+                    Message = "All departments fetched successfully",
+                    Status = true,
+                    Data = getAllDepartments.Select(dpt => new DepartmentDtos
+                    {
+                        Id = dpt.Id,
+                        DepartmentName = dpt.DepartmentName,
+                        DepartmentalCode = dpt.DepartmentalCode,
+                        DateCreated = dpt.DateCreated,
+                    }).ToList()
                 };
             }
-            _logger.LogInformation("All departments fetched successfully");
-            return new BaseResponse<IEnumerable<DepartmentDtos>>
+            catch (Exception ex)
             {
-                Message = "All departments fetched successfully",
-                Status = true,
-                Data = getAllDepartments.Select(dpt => new DepartmentDtos
+                _logger.LogError(ex, "Error occurred while fetching departments");
+                return new BaseResponse<IEnumerable<DepartmentDtos>>
                 {
-                    Id = dpt.Id,
-                    DepartmentName = dpt.DepartmentName,
-                    DepartmentalCode = dpt.DepartmentalCode,
-                    DateCreated = dpt.DateCreated,
-                }).ToList()
-            };
+                    Message = "An error occurred while fetching departments.",
+                    Status = false,
+                    Data = new List<DepartmentDtos>()
+                };
+            }
         }
 
         public async Task<BaseResponse<DepartmentDtos>> GetDepartmentById(Guid id)

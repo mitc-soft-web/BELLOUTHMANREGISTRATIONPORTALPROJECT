@@ -1,25 +1,357 @@
-﻿@model ErrorViewModel
+@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = $"{Model.StatusCode} - {Model.Title}";
+    Layout = null; // Self-contained so error page never crashes due to layout/auth failures
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MITC Portal</title>
+    <link rel="icon" type="image/png" href="~/favicon.png" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004d99;
+            --primary-light: #e6f0fa;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --page-bg: #f8fafc;
+            --border-color: #e2e8f0;
+        }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-@if (Model?.ShowRequestId ?? false)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+        .error-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
+            border: 1px solid var(--border-color);
+            max-width: 620px;
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header-accent {
+            height: 6px;
+            background: linear-gradient(90deg, #0066cc, #38bdf8, #0066cc);
+        }
+
+        .card-body {
+            padding: 48px 40px;
+        }
+
+        .logo-wrapper {
+            margin-bottom: 28px;
+        }
+
+        .logo-wrapper img {
+            height: 52px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .status-badge.error-404 {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-badge.error-403, .status-badge.error-401 {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .status-badge.error-500 {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .illustration {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .illustration.error-404 {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .illustration.error-403, .illustration.error-401 {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
+
+        .illustration.error-500 {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .illustration svg {
+            width: 64px;
+            height: 64px;
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        p.lead-text {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+            color: #ffffff;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .footer-info {
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .request-id {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.8rem;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+            color: #475569;
+            margin-top: 4px;
+            user-select: all;
+        }
+
+        @@media (max-width: 640px) {
+            .card-body {
+                padding: 36px 24px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p.lead-text {
+                font-size: 0.95rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <div class="card-header-accent"></div>
+        <div class="card-body">
+            <div class="logo-wrapper">
+                <a href="/">
+                    <img src="https://mitc.iaaae.org/wp-content/uploads/2024/12/logo3.jpg" alt="MITC Logo" onerror="this.onerror=null;this.src='/assets/mitc_logo.png';" />
+                </a>
+            </div>
+
+            @{
+                var badgeClass = Model.StatusCode switch
+                {
+                    404 => "error-404",
+                    403 => "error-403",
+                    401 => "error-401",
+                    _ => "error-500"
+                };
+            }
+
+            <div class="illustration @badgeClass">
+                @if (Model.StatusCode == 404)
+                {
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 4h.01" />
+                    </svg>
+                }
+                else if (Model.StatusCode == 403 || Model.StatusCode == 401)
+                {
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                }
+                else
+                {
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                }
+            </div>
+
+            <div class="status-badge @badgeClass">
+                HTTP @Model.StatusCode
+            </div>
+
+            <h1>@Model.Title</h1>
+            <p class="lead-text">@Model.Message</p>
+
+            <div class="actions">
+                <button type="button" onclick="history.back()" class="btn btn-secondary">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Go Back
+                </button>
+
+                <a href="/" class="btn btn-primary">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Home Page
+                </a>
+
+                @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                {
+                    <a href="/Student/GetAllStudent" class="btn btn-outline">
+                        Admin Dashboard
+                    </a>
+                }
+                else if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Student"))
+                {
+                    <a href="/Student/Index" class="btn btn-outline">
+                        Student Dashboard
+                    </a>
+                }
+            </div>
+
+            <div class="footer-info">
+                <div>
+                    Need assistance? Contact MITC Admissions at
+                    <a href="mailto:admin@mitc.iaaae.org" style="color: var(--primary); text-decoration: none; font-weight: 600;">admin@mitc.iaaae.org</a>
+                </div>
+                @if (Model.ShowRequestId)
+                {
+                    <div style="margin-top: 6px;">
+                        <span>Incident Reference:</span>
+                        <div class="request-id">@Model.RequestId</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</body>
+</html>

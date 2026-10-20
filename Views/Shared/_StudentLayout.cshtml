@@ -295,8 +295,8 @@
             <div class="container">
                 <div>Welcome to Student Portal</div>
                 <div class="user-info">
-                    <div class="user-avatar">@User.Identity.Name?.Substring(0, 1).ToUpper()</div>
-                    <span>@User.Identity.Name</span>
+                    <div class="user-avatar">@(string.IsNullOrWhiteSpace(User.Identity?.Name) ? "S" : User.Identity.Name.Substring(0, 1).ToUpper())</div>
+                    <span>@(string.IsNullOrWhiteSpace(User.Identity?.Name) ? "Student" : User.Identity.Name)</span>
                 </div>
             </div>
         </div>
