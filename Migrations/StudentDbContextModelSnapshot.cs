@@ -138,7 +138,12 @@ namespace Mitc_Registration_Portal.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime(6)");
@@ -151,13 +156,18 @@ namespace Mitc_Registration_Portal.Migrations
 
                     b.Property<string>("PaymentStatus")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Reference")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Reference")
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -331,7 +341,6 @@ namespace Mitc_Registration_Portal.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("DateCreated")
@@ -345,7 +354,7 @@ namespace Mitc_Registration_Portal.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -411,6 +420,9 @@ namespace Mitc_Registration_Portal.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("PassportId")
                         .IsUnique();
@@ -625,8 +637,7 @@ namespace Mitc_Registration_Portal.Migrations
 
             modelBuilder.Entity("Mitc_Registration_Portal.Models.Entities.Payment", b =>
                 {
-                    b.Navigation("Student")
-                        .IsRequired();
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("Mitc_Registration_Portal.Models.Entities.Role", b =>
