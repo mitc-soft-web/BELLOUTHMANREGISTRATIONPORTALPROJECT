@@ -8,6 +8,7 @@ using Mitc_Registration_Portal.Configuration;
 using Mitc_Registration_Portal.Interface.Services;
 using Mitc_Registration_Portal.Contracts.MailingService;
 using Mitc_Registration_Portal.Contracts.Messaging;
+using Mitc_Registration_Portal.Extensions;
 using Mitc_Registration_Portal.Identity;
 using Mitc_Registration_Portal.Implementation.MailingService;
 using Mitc_Registration_Portal.Implementation.Repositories;
@@ -77,8 +78,14 @@ builder.Services.AddValidatorsFromAssemblyContaining<StudentValidation>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
+var rawConnectionString = builder.Configuration.GetConnectionString("MITCContext")
+    ?? builder.Configuration["DATABASE_URL"]
+    ?? builder.Configuration["MYSQL_URL"];
+
+var connectionString = ConnectionStringHelper.NormalizeMySqlConnectionString(rawConnectionString);
+
 builder.Services.AddDbContext<StudentDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("MITCContext"),
+    options.UseMySql(connectionString,
         new MySqlServerVersion(new Version(8, 0, 36))
     ));
 
@@ -119,10 +126,10 @@ var app = builder.Build();
 // Apply migrations automatically on startup so database schema and seeds are created on new deployments.
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     try
     {
+        var db = scope.ServiceProvider.GetRequiredService<StudentDbContext>();
         logger.LogInformation("Applying database migrations...");
         db.Database.Migrate();
         logger.LogInformation("Database migrations applied successfully.");

@@ -393,7 +393,7 @@
                     <div class="form-stack">
                         <div class="field-group">
                             <label for="DepartmentId">Assigned Department / Course</label>
-                            <select id="DepartmentId" name="DepartmentId" class="form-select" asp-items="Model.Data.DepartmentsSelectListItems" 
+                            <select id="DepartmentId" name="DepartmentId" class="form-select" asp-items="Model?.Data?.DepartmentsSelectListItems" 
                                     disabled="@(Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected ? "disabled" : null)"></select>
                             <div class="helper-text">Admin can change this before saving, especially when issuing admission.</div>
                             @if (Model.Data.Status == Status.Admitted || Model.Data.Status == Status.Rejected)
